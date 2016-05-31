@@ -23,7 +23,7 @@ jQuery(document).ready(function($) {
 
 	// Since the event is only triggered when the hash changes, we need to trigger
 	// the event now, to handle the hash the page may have loaded with.
-	jQuery(window).trigger( 'hashchange' );
+	$(window).trigger( 'hashchange' );
 
 
 	if($('.rcp-datepicker').length > 0 ) {
@@ -84,10 +84,7 @@ jQuery(document).ready(function($) {
 			}
 		});
 	}
-	if($('.rcp-help').length) {
-		// prettify the documentation code samples
-		$("pre.php").snippet("php", {style: 'ide-eclipse'});
-	}
+
 	// auto calculate the subscription expiration when manually adding a user
 	$('#rcp-level').change(function() {
 		var level_id = $('option:selected', this).val();
