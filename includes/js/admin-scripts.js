@@ -1,8 +1,40 @@
 jQuery(document).ready(function($) {
+
+	// Tooltips
+	var tiptip_args = {
+		'attribute': 'data-tip',
+		'fadeIn': 50,
+		'fadeOut': 50,
+		'delay': 200
+	};
+	$( '.rcp-help-tip' ).tipTip( tiptip_args );
+
+	// restrict content metabox
+	$('#rcp-restrict-by').on('change', function() {
+		var $this = $(this);
+
+		$('#rcp-metabox-field-levels,#rcp-metabox-field-access-levels').toggle();
+
+	});
+
+	$('#rcp_subscription_level_any, #rcp_subscription_level_any_paid, #rcp_subscription_level_specific').on('change', function() {
+		if( 'any' == $(this).val() || 'any-paid' == $(this).val() ) {
+			$('.rcp_subscription_level').prop( 'disabled', true );
+			$('.rcp-subscription-levels').hide();
+		} else {
+			$('.rcp-subscription-levels').show();
+			$('.rcp_subscription_level').prop( 'disabled', false );
+		}
+	});
+
+	$('.rcp_subscription_level').on('change', function() {
+		$('#rcp_subscription_level_any,#rcp_subscription_level_any_paid').prop( 'checked', false );
+	});
+
 	// settings tabs
 
 	//when the history state changes, gets the url from the hash and display
-	jQuery(window).bind( 'hashchange', function(e) {
+	$(window).bind( 'hashchange', function(e) {
 
 		var url = jQuery.param.fragment();
 
