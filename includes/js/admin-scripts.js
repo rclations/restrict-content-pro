@@ -66,15 +66,7 @@ jQuery(document).ready(function($) {
 
 	sub_levels_radio.on('change', function() {
 		var type = $(this).val();
-		console.log(type);
 		Settings_Controls.prepare_sub_levels(type);
-		// if( 'any' == $(this).val() || 'any-paid' == $(this).val() ) {
-		// 	$('.rcp_subscription_level').prop( 'disabled', true );
-		// 	$('.rcp-subscription-levels').hide();
-		// } else {
-		// 	$('.rcp-subscription-levels').show();
-		// 	$('.rcp_subscription_level').prop( 'disabled', false );
-		// }
 	});
 
 	$('.rcp_subscription_level').on('change', function() {
