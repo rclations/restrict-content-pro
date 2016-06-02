@@ -82,7 +82,7 @@ img.help-image { max-width: 99%; overflow: hidden; border: 1px solid #ccc; }
 #rcp-error-logs .column-log_error { width: 15%; }
 #rcp-error-logs .column-message { width: 65%; }
 /* restrict this content metabox */
-#rcp-metabox-field-levels {
+#rcp-metabox-field-levels, #rcp-metabox-field-access-levels {
 	border-left: 3px solid #eee;
 	padding-left: 10px;
 }
