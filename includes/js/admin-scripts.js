@@ -69,10 +69,6 @@ jQuery(document).ready(function($) {
 		Settings_Controls.prepare_sub_levels(type);
 	});
 
-	$('.rcp_subscription_level').on('change', function() {
-		$('#rcp_subscription_level_any,#rcp_subscription_level_any_paid').prop( 'checked', false );
-	});
-
 	// settings tabs
 
 	//when the history state changes, gets the url from the hash and display
