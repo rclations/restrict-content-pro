@@ -124,6 +124,13 @@ function rcp_save_meta_data( $post_id ) {
 
 	switch( $restrict_by ) {
 
+		case 'unrestricted' :
+			delete_post_meta( $post_id, 'rcp_access_level' );
+			delete_post_meta( $post_id, 'rcp_subscription_level' );
+
+			break;
+
+
 		case 'subscription-level' :
 
 			$level_set = sanitize_text_field( $_POST['rcp_subscription_level_any_set'] );

@@ -9,22 +9,72 @@ jQuery(document).ready(function($) {
 	};
 	$( '.rcp-help-tip' ).tipTip( tiptip_args );
 
+	var restriction_control        = $('#rcp-restrict-by');
+	var sub_levels_control         = $('#rcp-metabox-field-levels');
+	var sub_levels_select          = $('.rcp-subscription-levels');
+	var sub_levels_radio           = $('input[name=rcp_subscription_level_any_set]');
+	var access_levels_control      = $('#rcp-metabox-field-access-levels');
+	var additional_options_control = $('#rcp-metabox-field-options');
+
+	var Settings_Controls = {
+		prepare_type: function(type) {
+			if ('unrestricted' === type) {
+				sub_levels_control.hide();
+				access_levels_control.hide();
+				additional_options_control.hide();
+			}
+
+			if ('subscription-level' === type) {
+				sub_levels_control.show();
+				access_levels_control.hide();
+				additional_options_control.show();
+			}
+
+			if ('access-level' === type) {
+				sub_levels_control.hide();
+				access_levels_control.show();
+				additional_options_control.show();
+			}
+		},
+
+		prepare_sub_levels: function(type) {
+			if ('any' === type) {
+				sub_levels_select.hide();
+			}
+
+			if ('any-paid' === type) {
+				sub_levels_select.hide();
+			}
+
+			if ('specific' === type) {
+				sub_levels_radio.show();
+				sub_levels_select.show();
+				access_levels_control.hide();
+				additional_options_control.show();
+			}
+		}
+	}
+
+	var restriction_type = restriction_control.val();
+	Settings_Controls.prepare_type(restriction_type);
+
 	// restrict content metabox
-	$('#rcp-restrict-by').on('change', function() {
-		var $this = $(this);
-
-		$('#rcp-metabox-field-levels,#rcp-metabox-field-access-levels').toggle();
-
+	restriction_control.on('change', function() {
+		var type = $(this).val();
+		Settings_Controls.prepare_type(type);
 	});
 
-	$('#rcp_subscription_level_any, #rcp_subscription_level_any_paid, #rcp_subscription_level_specific').on('change', function() {
-		if( 'any' == $(this).val() || 'any-paid' == $(this).val() ) {
-			$('.rcp_subscription_level').prop( 'disabled', true );
-			$('.rcp-subscription-levels').hide();
-		} else {
-			$('.rcp-subscription-levels').show();
-			$('.rcp_subscription_level').prop( 'disabled', false );
-		}
+	sub_levels_radio.on('change', function() {
+		var type = $(this).val();
+		console.log(type);
+		Settings_Controls.prepare_sub_levels(type);
+		// if( 'any' == $(this).val() || 'any-paid' == $(this).val() ) {
+		// 	$('.rcp_subscription_level').prop( 'disabled', true );
+		// 	$('.rcp-subscription-levels').hide();
+		// } else {
+		// 	$('.rcp-subscription-levels').show();
+		// 	$('.rcp_subscription_level').prop( 'disabled', false );
+		// }
 	});
 
 	$('.rcp_subscription_level').on('change', function() {
