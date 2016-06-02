@@ -86,6 +86,9 @@ img.help-image { max-width: 99%; overflow: hidden; border: 1px solid #ccc; }
 	border-left: 3px solid #eee;
 	padding-left: 10px;
 }
+.rcp-subscription-levels {
+	padding-left: 10px;
+}
 /* reports */
 #rcp-graphs-date-options,
 #rcp-date-range-options { float: left; }
