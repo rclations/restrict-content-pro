@@ -7,6 +7,7 @@ function rcp_admin_scripts( $hook ) {
 	$pages = array( $rcp_members_page, $rcp_subscriptions_page, $rcp_discounts_page, $rcp_payments_page, $rcp_reports_page, $rcp_settings_page, $rcp_logs_page, $rcp_export_page, $rcp_tools_page, $rcp_help_page );
 
 	$pages[] = 'post.php';
+	$pages[] = 'post-new.php';
 	$pages[] = 'edit.php';
 
 	if( in_array( $hook, $pages ) ) {
