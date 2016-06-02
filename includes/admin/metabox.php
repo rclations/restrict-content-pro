@@ -99,41 +99,84 @@ function rcp_render_meta_box() {
 // Save data from meta box
 function rcp_save_meta_data( $post_id ) {
 
-	$rcp_meta_box = rcp_get_metabox_fields();
-
 	// verify nonce
 	if ( ! isset( $_POST['rcp_meta_box'] ) || ! wp_verify_nonce( $_POST['rcp_meta_box'], basename( __FILE__ ) ) ) {
-		return $post_id;
+		return;
 	}
 
 	// check autosave
 	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
-		return $post_id;
+		return;
 	}
 
 	// check permissions
 	if ( 'page' == $_POST['post_type'] ) {
-		if ( !current_user_can( 'edit_page', $post_id ) ) {
-			return $post_id;
+
+		if ( ! current_user_can( 'edit_page', $post_id ) ) {
+			return;
 		}
-	} elseif ( !current_user_can( 'edit_post', $post_id ) ) {
-		return $post_id;
+
+	} elseif ( ! current_user_can( 'edit_post', $post_id ) ) {
+		return;
 	}
 
-	foreach ( $rcp_meta_box['fields'] as $field ) {
-		if( isset( $_POST[$field['id']] ) ) {
+	$restrict_by = sanitize_text_field( $_POST['rcp_restrict_by'] );
 
-			$old = get_post_meta ($post_id, $field['id'], true );
-			$data = $_POST[$field['id']];
+	switch( $restrict_by ) {
 
-			if ( ( $data || $data == 0 ) && $data != $old ) {
-				update_post_meta( $post_id, $field['id'], $data) ;
-			} elseif ( '' == $data && $old ) {
-				delete_post_meta( $post_id, $field['id'], $old );
+		case 'subscription-level' :
+
+			$level_set = sanitize_text_field( $_POST['rcp_subscription_level_any_set'] );
+
+			switch( $level_set ) {
+
+				case 'any' :
+
+					update_post_meta( $post_id, 'rcp_subscription_level', 'any' );
+					break;
+
+
+				case 'any-paid' :
+
+					update_post_meta( $post_id, 'rcp_subscription_level', 'any-paid' );
+
+					break;
+
+				case 'specific' :
+
+					$levels = array_map( 'absint', $_POST[ 'rcp_subscription_level' ] );
+
+					update_post_meta( $post_id, 'rcp_subscription_level', $levels );
+
+					break;
+
 			}
-		} else {
-			delete_post_meta( $post_id, $field['id'] );
-		}
+
+
+			// Remove unneeded fields
+			delete_post_meta( $post_id, 'rcp_access_level' );
+
+			break;
+
+
+		case 'access-level' :
+
+			update_post_meta( $post_id, 'rcp_access_level', absint( $_POST[ 'rcp_access_level' ] ) );
+
+			// Remove unneeded fields
+			delete_post_meta( $post_id, 'rcp_subscription_level' );
+
+			break;
+
 	}
+
+	$show_excerpt = isset( $_POST['rcp_show_excerpt'] );
+	$hide_in_feed = isset( $_POST['rcp_hide_from_feed'] );
+	$user_role    = sanitize_text_field( $_POST[ 'rcp_user_level' ] );
+
+	update_post_meta( $post_id, 'rcp_show_excerpt', $show_excerpt );
+	update_post_meta( $post_id, 'rcp_hide_from_feed', $hide_in_feed );
+	update_post_meta( $post_id, 'rcp_user_level', $user_role );
+
 }
 add_action( 'save_post', 'rcp_save_meta_data' );
