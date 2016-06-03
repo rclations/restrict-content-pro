@@ -87,8 +87,8 @@ img.help-image { max-width: 99%; overflow: hidden; border: 1px solid #ccc; }
 	padding-left: 10px;
 }
 .rcp-subscription-levels {
-    padding-left: 28px;
-    margin-top: .5em;
+    padding-left: 1.75rem;
+    margin-top: .5rem;  
 }
 /* reports */
 #rcp-graphs-date-options,
