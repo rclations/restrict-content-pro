@@ -13,8 +13,8 @@ function rcp_admin_scripts( $hook ) {
 	if( in_array( $hook, $pages ) ) {
 		wp_enqueue_script( 'jquery-ui-sortable' );
 		wp_enqueue_script( 'jquery-ui-datepicker' );
+		wp_enqueue_script( 'jquery-ui-tooltip' );
 		wp_enqueue_script( 'bbq',  RCP_PLUGIN_URL . 'includes/js/jquery.ba-bbq.min.js' );
-		wp_enqueue_script( 'tiptip',  RCP_PLUGIN_URL . 'includes/js/jquery.tipTip.minified.js', array( 'jquery' ), '1.3' );
 		wp_enqueue_script( 'rcp-admin-scripts',  RCP_PLUGIN_URL . 'includes/js/admin-scripts.js', array( 'jquery' ), RCP_PLUGIN_VERSION );
 	}
 

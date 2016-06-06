@@ -14,7 +14,7 @@ $levels_display    = is_array( $sub_levels ) ? '' : ' style="display:none;"';
 	<p><strong><?php _e( 'Member access options', 'rcp' ); ?></strong></p>
 	<p>
 		<?php _e( 'Select who should have access to this content.', 'rcp' ); ?>
-		<span alt="f223" class="rcp-help-tip dashicons dashicons-editor-help" data-tip="<?php _e( '<strong>Subscription level</strong>: a subscription level refers to a membership option. For example, you might have a Gold, Silver, and Bronze membership level. <br/><strong>Access Level</strong>: refers to a tiered system where a member\'s ability to view content is determined by the access level assigned to their account. A member with an access level of 5 can view content assigned to access levels of 5 and lower.', 'rcp' ); ?>"></span>
+		<span alt="f223" class="rcp-help-tip dashicons dashicons-editor-help" title="<?php _e( '<strong>Subscription level</strong>: a subscription level refers to a membership option. For example, you might have a Gold, Silver, and Bronze membership level. <br/><br/><strong>Access Level</strong>: refers to a tiered system where a member\'s ability to view content is determined by the access level assigned to their account. A member with an access level of 5 can view content assigned to access levels of 5 and lower.', 'rcp' ); ?>"></span>
 	</p>
 	<p>
 		<select id="rcp-restrict-by" name="rcp_restrict_by">

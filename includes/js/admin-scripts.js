@@ -1,13 +1,22 @@
 jQuery(document).ready(function($) {
 
 	// Tooltips
-	var tiptip_args = {
-		'attribute': 'data-tip',
-		'fadeIn': 50,
-		'fadeOut': 50,
-		'delay': 200
-	};
-	$( '.rcp-help-tip' ).tipTip( tiptip_args );
+	$('.rcp-help-tip').tooltip({
+		content: function() {
+			return $(this).prop('title');
+		},
+		position: {
+			my: 'center top',
+			at: 'center bottom+10',
+			collision: 'flipfit'
+		},
+		hide: {
+			duration: 500
+		},
+		show: {
+			duration: 500
+		}
+	});
 
 	var restriction_control        = $('#rcp-restrict-by');
 	var sub_levels_control         = $('#rcp-metabox-field-levels');
