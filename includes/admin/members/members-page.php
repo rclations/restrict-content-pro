@@ -233,7 +233,7 @@ function rcp_members_page() {
 			<?php do_action('rcp_members_below_table'); ?>
 			<h3>
 				<?php _e('Add New Subscription (for existing user)', 'rcp'); ?>
-				<span alt="f223" class="rcp-help-tip dashicons dashicons-editor-help" title="<?php _e( 'If you wish to create a brand new account, that may be done from Users &rarr; Add New.', 'rcp' ); ?>"></span>
+				<span alt="f223" class="rcp-help-tip dashicons dashicons-editor-help" title="<?php _e( 'If you wish to create a brand new account, that may be done from Users &rarr; Add New. <br/><strong>Note</strong>: this will not create a payment profile for the member. That must be done manually through your merchant account.', 'rcp' ); ?>"></span>
 			</h3>
 			<form id="rcp-add-new-member" action="" method="post">
 				<table class="form-table">
