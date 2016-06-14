@@ -262,7 +262,8 @@ function rcp_members_page() {
 										endforeach;
 									?>
 								</select>
-								<p class="description"><?php _e('Choose the subscription level for this user', 'rcp'); ?></p>
+								<span alt="f223" class="rcp-help-tip dashicons dashicons-editor-help" title="<?php _e( 'The subscription level determines the content the member has access to. <strong>Note</strong>: adding a subscription level to a member will not create a payment profile in your merchant account.', 'rcp' ); ?>"></span>
+								<p class="description"><?php _e('Choose the subscription level for this user.', 'rcp'); ?></p>
 							</td>
 						</tr>
 						<tr class="form-field">
