@@ -94,7 +94,7 @@ $member = new RCP_Member( $member_id );
 						<input name="recurring" id="rcp-recurring" type="checkbox" value="1" <?php checked( 1, rcp_is_recurring( $member->ID ) ); ?>/>
 						<?php _e( 'Is this user\'s subscription recurring?', 'rcp' ); ?>
 					</label>
-					<span alt="f223" class="rcp-help-tip dashicons dashicons-editor-help" title="<?php _e( 'Only customers with recurring memberships will be given the option to cancel their membership.', 'rcp' ); ?>"></span>
+					<span alt="f223" class="rcp-help-tip dashicons dashicons-editor-help" title="<?php _e( 'If checked, this member has a recurring subscription. Only customers with recurring memberships will be given the option to cancel their membership on their subscription details page.', 'rcp' ); ?>"></span>
 				</td>
 			</tr>
 			<tr valign="top">
