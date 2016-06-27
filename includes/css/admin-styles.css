@@ -129,6 +129,18 @@ img.help-image {
 	border: 1px solid #ccc;
 }
 
+/* restrict this content metabox */
+#rcp-metabox-field-role,
+#rcp-metabox-field-levels,
+#rcp-metabox-field-access-levels {
+	border-left: 3px solid #eee;
+	padding-left: 10px;
+}
+.rcp-subscription-levels {
+    padding-left: 1.75rem;
+    margin-top: .5rem;
+ }
+
 /* members page columns */
 
 .rcp-user-col {
@@ -385,7 +397,6 @@ table.rcp-table th {
 		display: none !important;
 	}
 }
-
 
 @media (min-width: 783px) {
 	.rcp-payment-amount-user-col {

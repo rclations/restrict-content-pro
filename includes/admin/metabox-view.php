@@ -1,4 +1,5 @@
 <?php
+$is_paid           = get_post_meta( get_the_ID(), '_is_paid', true ); // This is purely for backwards compatibility and is no longer used
 $sub_levels        = get_post_meta( get_the_ID(), 'rcp_subscription_level', true );
 $set_level         = is_array( $sub_levels ) ? '' : $sub_levels;
 $access_level      = get_post_meta( get_the_ID(), 'rcp_access_level', true );
@@ -7,8 +8,9 @@ $show_excerpt      = get_post_meta( get_the_ID(), 'rcp_show_excerpt', true );
 $hide_in_feed      = get_post_meta( get_the_ID(), 'rcp_hide_from_feed', true );
 $user_role         = get_post_meta( get_the_ID(), 'rcp_user_level', true );
 $access_display    = is_numeric( $access_level ) ? '' : ' style="display:none;"';
-$level_set_display = ! empty( $sub_levels ) ? '' : ' style="display:none;"';
+$level_set_display = ! empty( $sub_levels ) || ! empty( $is_paid ) ? '' : ' style="display:none;"';
 $levels_display    = is_array( $sub_levels ) ? '' : ' style="display:none;"';
+$role_set_display  = '' != $user_role ? '' : ' style="display:none;"';
 ?>
 <div id="rcp-metabox-field-restrict-by" class="rcp-metabox-field">
 	<p><strong><?php _e( 'Member access options', 'rcp' ); ?></strong></p>
@@ -19,8 +21,9 @@ $levels_display    = is_array( $sub_levels ) ? '' : ' style="display:none;"';
 	<p>
 		<select id="rcp-restrict-by" name="rcp_restrict_by">
 			<option value="unrestricted" <?php selected( true, empty( $sub_levels ) && empty( $access_level) ); ?>><?php _e( 'Everyone', 'rcp' ); ?></option>
-			<option value="subscription-level"<?php selected( true, ! empty( $sub_levels ) ); ?>><?php _e( 'Members of subscription level(s)', 'rcp' ); ?></option>
-			<option value="access-level"<?php selected( true, is_numeric( $access_level ) ); ?>><?php _e( 'Members with an access level', 'rcp' ); ?></option>
+			<option value="subscription-level"<?php selected( true, ! empty( $sub_levels ) || ! empty( $is_paid ) ); ?>><?php _e( 'Members of subscription level(s)', 'rcp' ); ?></option>
+			<option value="access-level"<?php selected( true, is_numeric( $access_level ) && empty( $is_paid ) ); ?>><?php _e( 'Members with an access level', 'rcp' ); ?></option>
+			<option value="registered-users"<?php selected( true, empty( $sub_levels ) && ! is_numeric( $access_level ) && empty( $is_paid ) ); ?>><?php _e( 'Members with a certain role', 'rcp' ); ?></option>
 		</select>
 	</p>
 </div>
@@ -30,7 +33,7 @@ $levels_display    = is_array( $sub_levels ) ? '' : ' style="display:none;"';
 		&nbsp;<?php _e( 'Members of any subscription level(s)', 'rcp' ); ?><br/>
 	</label>
 	<label for="rcp_subscription_level_any_paid">
-		<input type="radio" name="rcp_subscription_level_any_set" id="rcp_subscription_level_any_paid" value="any-paid"<?php checked( 'any-paid', $set_level ); ?>/>
+		<input type="radio" name="rcp_subscription_level_any_set" id="rcp_subscription_level_any_paid" value="any-paid"<?php checked( true, $set_level == 'any-paid' || ! empty( $is_paid ) ); ?>/>
 		&nbsp;<?php _e( 'Members of any non-free subscription level(s)', 'rcp' ); ?><br/>
 	</label>
 	<label for="rcp_subscription_level_specific">
@@ -55,6 +58,18 @@ $levels_display    = is_array( $sub_levels ) ? '' : ' style="display:none;"';
 		</select>
 	</p>
 </div>
+<div id="rcp-metabox-field-role" class="rcp-metabox-field"<?php echo $role_set_display; ?>>
+	<p>
+		<span><?php _e( 'Require member to have capabilities from this user role or higher.', 'rcp' ); ?></span>
+	</p>
+	<p>
+		<select name="rcp_user_level" id="rcp-user-level-field">
+			<?php foreach( array( 'All', 'Administrator', 'Editor', 'Author', 'Contributor', 'Subscriber' ) as $role ) : ?>
+				<option value="<?php echo esc_attr( $role ); ?>"<?php selected( $role, $user_role ); ?>><?php echo $role; ?></option>
+			<?php endforeach; ?>
+		</select>
+	</p>
+</div>
 <div id="rcp-metabox-field-options" class="rcp-metabox-field">
 
 	<p><strong><?php _e( 'Additional options', 'rcp' ); ?></strong></p>
@@ -69,14 +84,6 @@ $levels_display    = is_array( $sub_levels ) ? '' : ' style="display:none;"';
 			<input type="checkbox" name="rcp_hide_from_feed" id="rcp-hide-in-feed" value="1"<?php checked( true, $hide_in_feed ); ?>/>
 			<?php _e( 'Hide this content and excerpt from RSS feeds.', 'rcp' ); ?>
 		</label>
-	</p>
-	<p>
-		<select name="rcp_user_level" id="rcp-user-level-field">
-			<?php foreach( array( 'All', 'Administrator', 'Editor', 'Author', 'Contributor', 'Subscriber' ) as $role ) : ?>
-				<option value="<?php echo esc_attr( $role ); ?>"<?php selected( $role, $user_role ); ?>><?php echo $role; ?></option>
-			<?php endforeach; ?>
-		</select>
-		<span><?php _e( 'Require member to have capabilities from this user role or higher.', 'rcp' ); ?></span>
 	</p>
 	<p>
 		<?php printf(

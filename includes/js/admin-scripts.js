@@ -19,6 +19,7 @@ jQuery(document).ready(function($) {
 	});
 
 	var restriction_control        = $('#rcp-restrict-by');
+	var role_control               = $('#rcp-metabox-field-role');
 	var sub_levels_control         = $('#rcp-metabox-field-levels');
 	var sub_levels_select          = $('.rcp-subscription-levels');
 	var sub_levels_radio           = $('input[name=rcp_subscription_level_any_set]');
@@ -28,18 +29,28 @@ jQuery(document).ready(function($) {
 	var Settings_Controls = {
 		prepare_type: function(type) {
 			if ('unrestricted' === type) {
+				role_control.hide();
 				sub_levels_control.hide();
 				access_levels_control.hide();
 				additional_options_control.hide();
 			}
 
+			if ('registered-users' === type) {
+				role_control.show();
+				sub_levels_control.hide();
+				access_levels_control.hide();
+				additional_options_control.show();
+			}
+
 			if ('subscription-level' === type) {
+				role_control.show();
 				sub_levels_control.show();
 				access_levels_control.hide();
 				additional_options_control.show();
 			}
 
 			if ('access-level' === type) {
+				role_control.show();
 				sub_levels_control.hide();
 				access_levels_control.show();
 				additional_options_control.show();
