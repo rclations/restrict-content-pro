@@ -547,6 +547,8 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 						do_action( 'rcp_recurring_payment_failed', $member, $this );
 						do_action( 'rcp_stripe_charge_failed', $payment_event );
 
+						rcp_add_member_note( $member->ID, sprintf( __( 'Recurring charge failed in Stripe. Event ID: %s', 'rcp' ), $event->id ) );
+
 						die( 'rcp_stripe_charge_failed action fired successfully' );
 
 					}

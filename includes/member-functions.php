@@ -1285,3 +1285,23 @@ function rcp_update_expired_member_role( $status, $member_id, $old_status, $memb
 	}
 }
 add_action( 'rcp_set_status', 'rcp_update_expired_member_role', 10, 4 );
+
+/**
+ * Add a note to the member when a recurring charge fails.
+ *
+ * Stripe and Stripe Checkout are omitted from this because their notes are added directly
+ * in the gateway to include the event ID.
+ * @see RCP_Payment_Gateway_Stripe::process_webhooks()
+ *
+ * @param RCP_Member          $member
+ * @param RCP_Payment_Gateway $gateway
+ *
+ * @since 2.7.4
+ * @return void
+ */
+function rcp_add_recurring_payment_failure_note( $member, $gateway ) {
+	if ( 'RCP_Payment_Gateway_Stripe' != get_class( $gateway ) && 'RCP_Payment_Gateway_Stripe_Checkout' != get_class( $gateway ) ) {
+		rcp_add_member_note( $member->ID, __( 'Recurring charge failed.', 'rcp' ) );
+	}
+}
+add_action( 'rcp_recurring_payment_failed', 'rcp_add_recurring_payment_failure_note', 10, 2 );
