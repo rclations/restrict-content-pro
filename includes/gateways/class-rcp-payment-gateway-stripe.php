@@ -544,6 +544,8 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 					// failed payment
 					if ( $event->type == 'charge.failed' ) {
 
+						$this->webhook_event_id = $event->id;
+
 						do_action( 'rcp_recurring_payment_failed', $member, $this );
 						do_action( 'rcp_stripe_charge_failed', $payment_event, $event, $member );
 

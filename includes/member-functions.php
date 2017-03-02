@@ -1327,23 +1327,17 @@ add_action( 'rcp_set_status', 'rcp_update_expired_member_role', 10, 4 );
  * @return void
  */
 function rcp_add_recurring_payment_failure_note( $member, $gateway ) {
-	if ( 'RCP_Payment_Gateway_Stripe' != get_class( $gateway ) && 'RCP_Payment_Gateway_Stripe_Checkout' != get_class( $gateway ) ) {
-		rcp_add_member_note( $member->ID, __( 'Recurring charge failed.', 'rcp' ) );
+
+	$gateway_classes = wp_list_pluck( rcp_get_payment_gateways(), 'class' );
+	$gateway_name    = array_search( get_class( $gateway ), $gateway_classes );
+
+	$note = sprintf( __( 'Recurring charge failed in %s.', 'rcp' ), ucwords( $gateway_name ) );
+
+	if ( ! empty( $gateway->webhook_event_id ) ) {
+		$note .= sprintf( __( ' Event ID: %s', 'rcp' ), $gateway->webhook_event_id );
 	}
+
+	$member->add_note( $note );
+
 }
 add_action( 'rcp_recurring_payment_failed', 'rcp_add_recurring_payment_failure_note', 10, 2 );
-
-/**
- * Add a note to the member when a recurring Stripe charge fails.
- *
- * @param object     $payment_event Payment object.
- * @param object     $event         Event object.
- * @param RCP_Member $member        Member object.
- *
- * @since  2.7.4
- * @return void
- */
-function rcp_add_stripe_recurring_payment_failure_note( $payment_event, $event, $member ) {
-	rcp_add_member_note( $member->ID, sprintf( __( 'Recurring charge failed in Stripe. Event ID: %s', 'rcp' ), $event->id ) );
-}
-add_action( 'rcp_stripe_charge_failed', 'rcp_add_stripe_recurring_payment_failure_note', 10, 3 );
