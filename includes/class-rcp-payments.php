@@ -81,6 +81,27 @@ class RCP_Payments {
 			return;
 		}
 
+		// Backwards compatibility: use subscription ID instead of name.
+		if ( ! is_numeric( $args['subscription'] ) ) {
+			$subscription = rcp_get_subscription_details_by_name( $args['subscription'] );
+
+			if ( $subscription ) {
+				$args['subscription'] = $subscription->id;
+			}
+		}
+
+		// Backwards compatibility: update pending payment instead of creating a new one.
+		if ( ! empty( $args['user_id'] ) && 'complete' == $args['status'] ) {
+			$last_pending_payment = get_user_meta( $args['user_id'], 'rcp_pending_payment_id', true );
+			$pending_payment      = new RCP_Payment( $last_pending_payment );
+
+			if ( ! empty( $pending_payment->id ) && $args['amount'] == $pending_payment->amount && $args['subscription'] == $pending_payment->subscription ) {
+				$pending_payment->update( $args );
+
+				return $pending_payment->id;
+			}
+		}
+
 		$add = $wpdb->insert( $this->db_name, $args, array( '%s', '%s', '%s', '%d', '%s', '%s', '%s' ) );
 
 		// if insert was succesful, return the payment ID

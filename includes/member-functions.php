@@ -685,7 +685,15 @@ function rcp_print_user_payments_formatted( $user_id ) {
 						<button type="button" class="toggle-row"><span class="screen-reader-text"><?php _e( 'Show more details', 'rcp' ); ?></span></button>
 					</td>
 					<td data-colname="<?php _e( 'Date', 'rcp' ); ?>"><?php echo esc_html( $payment->date ); ?></td>
-					<td data-colname="<?php _e( 'Subscription', 'rcp' ); ?>"><?php echo esc_html( $payment->subscription ); ?></td>
+					<td data-colname="<?php _e( 'Subscription', 'rcp' ); ?>">
+						<?php
+						if ( is_numeric( $payment->subscription ) ) {
+							echo esc_html( rcp_get_subscription_name( $payment->subscription ) );
+						} else {
+							echo esc_html( $payment->subscription );
+						}
+						?>
+					</td>
 					<td data-colname="<?php _e( 'Payment Type', 'rcp' ); ?>"><?php echo esc_html( $payment->payment_type ); ?></td>
 					<td data-colname="<?php _e( 'Subscription Key', 'rcp' ); ?>"><?php echo esc_html( $payment->subscription_key ); ?></td>
 					<td data-colname="<?php _e( 'Transaction ID', 'rcp' ); ?>"><?php echo rcp_get_merchant_transaction_id_link( $payment ); ?></td>

@@ -296,18 +296,11 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 					)
 				), $this ) );
 
-				$payment_data = array(
-					'date'              => date( 'Y-m-d H:i:s', current_time( 'timestamp' ) ),
-					'subscription'      => $this->subscription_name,
-					'payment_type' 		=> 'Credit Card One Time',
-					'subscription_key' 	=> $this->subscription_key,
-					'amount' 			=> $this->initial_amount,
-					'user_id' 			=> $this->user_id,
-					'transaction_id'    => $charge->id
-				);
-
-				$rcp_payments = new RCP_Payments();
-				$rcp_payments->insert( $payment_data );
+				// Complete pending payment. This also updates the expiration date, status, etc.
+				$this->payment->update( array(
+					'transaction_id' => $charge->id,
+					'status'         => 'complete'
+				) );
 
 				$paid = true;
 
@@ -364,11 +357,6 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 				// log the new user in
 				rcp_login_user_in( $this->user_id, $this->user_name, $_POST['rcp_user_pass'] );
 
-			}
-
-			if( ! $this->auto_renew ) {
-				$member->set_expiration_date( $member->calculate_expiration() );
-				$member->set_status( 'active' );
 			}
 
 			if ( $this->auto_renew ) {

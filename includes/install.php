@@ -253,6 +253,9 @@ function rcp_create_tables() {
 
 	// create the RCP payments database table
 	$rcp_payments_db_name = rcp_get_payments_db_name();
+	/*
+	 * @todo Change 'subscription' to use ID and bigint(9) and update records.
+	 */
 	$sql = "CREATE TABLE {$rcp_payments_db_name} (
 		id bigint(9) NOT NULL AUTO_INCREMENT,
 		subscription varchar(200) NOT NULL,
@@ -263,6 +266,8 @@ function rcp_create_tables() {
 		subscription_key varchar(32) NOT NULL,
 		transaction_id varchar(64) NOT NULL,
 		status varchar(12) NOT NULL,
+		discount_code tinytext NOT NULL,
+		gateway tinytext NOT NULL,
 		PRIMARY KEY id (id),
 		KEY subscription (subscription),
 		KEY user_id (user_id),

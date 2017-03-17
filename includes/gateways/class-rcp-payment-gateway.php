@@ -30,6 +30,17 @@ class RCP_Payment_Gateway {
 	public $subscription_data;
 	public $webhook_event_id;
 
+	/**
+	 * Payment object for this transaction. Going into the gateway it's been
+	 * create with the status 'pending' and will need to be updated after
+	 * a successful payment.
+	 *
+	 * @var RCP_Payment
+	 * @access public
+	 * @since  2.9
+	 */
+	public $payment;
+
 	public function __construct( $subscription_data = array() ) {
 
 		$this->test_mode = rcp_is_sandbox();
@@ -54,6 +65,7 @@ class RCP_Payment_Gateway {
 			$this->auto_renew          = $this->supports( 'recurring' ) ? $subscription_data['auto_renew'] : false;;
 			$this->return_url          = $subscription_data['return_url'];
 			$this->subscription_data   = $subscription_data;
+			$this->payment             = new RCP_Payment( $subscription_data['payment_id'] );
 
 		}
 

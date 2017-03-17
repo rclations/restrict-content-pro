@@ -110,7 +110,15 @@ function rcp_payments_page() {
 								</div>
 								<button type="button" class="toggle-row"><span class="screen-reader-text"><?php _e( 'Show more details', 'rcp' ); ?></span></button>
 							</td>
-							<td data-colname="<?php _e( 'Subscription', 'rcp' ); ?>"><?php echo esc_html( $payment->subscription ); ?></td>
+							<td data-colname="<?php _e( 'Subscription', 'rcp' ); ?>">
+								<?php
+								if ( is_numeric( $payment->subscription ) ) {
+									echo esc_html( rcp_get_subscription_name( $payment->subscription ) );
+								} else {
+									echo esc_html( $payment->subscription );
+								}
+								?>
+							</td>
 							<td data-colname="<?php _e( 'Date', 'rcp' ); ?>"><?php echo esc_html( $payment->date ); ?></td>
 							<td data-colname="<?php _e( 'Amount', 'rcp' ); ?>"><?php echo rcp_currency_filter( $payment->amount ); ?></td>
 							<td data-colname="<?php _e( 'Type', 'rcp' ); ?>"><?php echo esc_html( $payment->payment_type ); ?></td>
