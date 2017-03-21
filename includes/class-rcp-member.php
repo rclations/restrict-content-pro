@@ -1165,10 +1165,18 @@ class RCP_Member extends WP_User {
 	 */
 	public function can_access( $post_id = 0 ) {
 
-		$subscription_levels = rcp_get_content_subscription_levels( $post_id );
-		$access_level        = get_post_meta( $post_id, 'rcp_access_level', true );
-		$user_level          = get_post_meta( $post_id, 'rcp_user_level', true );
-		$sub_id              = $this->get_subscription_id();
+		$post_type_restrictions = rcp_get_post_type_restrictions( get_post_type( $post_id ) );
+		$sub_id                 = $this->get_subscription_id();
+
+		if ( empty( $post_type_restrictions ) ) {
+			$subscription_levels = rcp_get_content_subscription_levels( $post_id );
+			$access_level        = get_post_meta( $post_id, 'rcp_access_level', true );
+			$user_level          = get_post_meta( $post_id, 'rcp_user_level', true );
+		} else {
+			$subscription_levels = array_key_exists( 'subscription_level', $post_type_restrictions ) ? $post_type_restrictions['subscription_level'] : false;
+			$access_level        = array_key_exists( 'access_level', $post_type_restrictions ) ? $post_type_restrictions['access_level'] : false;
+			$user_level          = array_key_exists( 'user_level', $post_type_restrictions ) ? $post_type_restrictions['user_level'] : false;
+		}
 
 		if ( rcp_is_restricted_content( $post_id ) ) {
 			$ret = in_array( rcp_get_status(), array( 'active', 'free', 'cancelled' ) );

@@ -33,6 +33,13 @@ function rcp_settings_menu() {
 	$rcp_help_page          = add_submenu_page( 'rcp-members', __( 'Help', 'rcp' ), __( 'Help', 'rcp' ), 'rcp_view_help', 'rcp-help', '__return_null' );
 	$rcp_add_ons_page       = add_submenu_page( 'rcp-members', __( 'Add-ons', 'rcp' ), __( 'Add-ons', 'rcp' ), 'rcp_view_members', 'rcp-add-ons', 'rcp_add_ons_admin' );
 
+	// Add "Restrict" submenu under each post type.
+	foreach ( rcp_get_metabox_post_types() as $post_type ) {
+		$url  = ( 'post' == $post_type ) ? 'edit.php' : 'edit.php?post_type=' . $post_type;
+		$slug = ( 'post' == $post_type ) ? 'rcp-restrict' : 'rcp-restrict-' . $post_type;
+		add_submenu_page( $url, __( 'Restrict', 'rcp' ), __( 'Restrict', 'rcp' ), 'edit_posts', $slug, 'rcp_restrict_post_type' );
+	}
+
 	if ( get_bloginfo('version') >= 3.3 ) {
 		// load each of the help tabs
 		add_action( "load-$rcp_members_page", "rcp_help_tabs" );

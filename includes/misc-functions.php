@@ -697,6 +697,11 @@ function rcp_is_restricted_content( $post_id ) {
 		}
 	}
 
+	// Check post type restrictions.
+	if ( ! $restricted ) {
+		$restricted = ! empty( rcp_get_post_type_restrictions( get_post_type( $post_id ) ) );
+	}
+
 	return apply_filters( 'rcp_is_restricted_content', $restricted, $post_id );
 
 }
@@ -744,6 +749,34 @@ function rcp_has_post_restrictions( $post_id ) {
 
 	return (bool) apply_filters( 'rcp_has_post_restrictions', $restricted, $post_id );
 
+}
+
+/**
+ * Returns an array of all restricted post types (keys) and their restriction
+ * settings (values).
+ *
+ * @since 2.9
+ * @return array
+ */
+function rcp_get_restricted_post_types() {
+	$restricted_post_types = get_option( 'rcp_restricted_post_types', array() );
+
+	return apply_filters( 'rcp_restricted_post_types', $restricted_post_types );
+}
+
+/**
+ * Get restrictions for a specific post type.
+ *
+ * @param string $post_type The post type to check.
+ *
+ * @since 2.9
+ * @return array|false Array of restriction settings or false if post type is unrestricted.
+ */
+function rcp_get_post_type_restrictions( $post_type ) {
+	$restricted_post_types = rcp_get_restricted_post_types();
+	$restrictions          = array_key_exists( $post_type, $restricted_post_types ) ? $restricted_post_types[ $post_type ] : false;
+
+	return apply_filters( 'rcp_post_type_restrictions', $restrictions, $post_type, $restricted_post_types );
 }
 
 /**

@@ -162,6 +162,11 @@ function rcp_admin_notices() {
 			$class = 'error';
 			break;
 
+		case 'post-type-updated' :
+
+			$text = __( 'Post type restrictions updated.', 'rcp' );
+			break;
+
 	endswitch;
 
 	if( $message ) {
