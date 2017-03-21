@@ -699,7 +699,8 @@ function rcp_is_restricted_content( $post_id ) {
 
 	// Check post type restrictions.
 	if ( ! $restricted ) {
-		$restricted = ! empty( rcp_get_post_type_restrictions( get_post_type( $post_id ) ) );
+		$post_type_restrictions = rcp_get_post_type_restrictions( get_post_type( $post_id ) );
+		$restricted             = ! empty( $post_type_restrictions );
 	}
 
 	return apply_filters( 'rcp_is_restricted_content', $restricted, $post_id );
