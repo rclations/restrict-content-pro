@@ -1035,7 +1035,7 @@ function rcp_complete_registration( $old_status, $payment_id, $payment ) {
 		'discount_code'   => $payment->discount_code
 	);
 
-	if ( ! empty( $subscription->trial_duration ) && ! $member->is_trialing() ) {
+	if ( empty( $payment->amount ) && ! empty( $subscription->trial_duration ) && ! $member->is_trialing() ) {
 		$args['trial_duration']      = $subscription->trial_duration;
 		$args['trial_duration_unit'] = $subscription->trial_duration_unit;
 	}
