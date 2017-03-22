@@ -200,8 +200,8 @@ function rcp_process_registration() {
 		'subscription'      => $subscription->id,
 		'gateway'           => $gateway,
 		'subscription_key' 	=> $subscription_key,
-		'amount' 			=> $amount,
-		'user_id' 			=> $user_data['id'],
+		'amount'            => $amount,
+		'user_id'           => $user_data['id'],
 		'status'            => 'pending',
 		'discount_code'     => $discount
 	);
@@ -982,18 +982,19 @@ function rcp_remove_subscription_data_on_failure( $gateway ) {
 	}
 
 	// Delete the pending payment.
-	if( ! empty( $gateway->user_id ) ) {
-		delete_user_meta( $gateway->user_id, 'rcp_pending_payment_id' );
+	if( ! empty( $gateway->user_id ) && ! empty( $gateway->payment ) ) {
+		$gateway->payment->delete();
 	}
 
 }
 add_action( 'rcp_registration_failed', 'rcp_remove_subscription_data_on_failure' );
 
 /**
- * Complete a registration by updating the following:
+ * Complete a registration when a payment is completed by updating the following:
  *
  *      - Add discount code to member's profile (if applicable).
  *      - Increase discount code usage (if applicable).
+ *      - Mark as trialing (if applicable).
  *      - Remove the role granted by the previous subscription level and apply new one.
  *
  * @uses rcp_set_as_member()
@@ -1063,10 +1064,10 @@ function rcp_set_as_member( $user_id, $args = array() ) {
 	$defaults = array(
 		'status'              => '',
 		'subscription_id'     => 0,
-		'expiration'          => '',
-		'discount_code'       => '', // To add to their profile and increase usage.
-	    'subscription_key'    => '',
-		'trial_duration'      => false,
+		'expiration'          => '',    // Calculated automatically if not provided.
+		'discount_code'       => '',    // To add to their profile and increase usage.
+		'subscription_key'    => '',
+		'trial_duration'      => false, // To set as trialing.
 		'trial_duration_unit' => 'day'
 	);
 
@@ -1077,8 +1078,7 @@ function rcp_set_as_member( $user_id, $args = array() ) {
 		return false;
 	}
 
-	$rcp_levels_db = new RCP_Levels();
-
+	$rcp_levels_db       = new RCP_Levels();
 	$member              = new RCP_Member( $user_id );
 	$old_subscription_id = get_user_meta( $member->ID, '_rcp_old_subscription_id', true );
 	$subscription_level  = $rcp_levels_db->get_level( $args['subscription_id'] );
@@ -1172,8 +1172,12 @@ function rcp_set_as_member( $user_id, $args = array() ) {
 	// Set join date for this subscription.
 	$member->set_joined_date( '', $subscription_level->id );
 
-	/*
-	 * Registration successful!
+	/**
+	 * Registration successful! Hook into this action if you need to execute code
+	 * after a successful registration, but not during an automatic renewal.
+	 *
+	 * @var RCP_Member $member
+	 * @since 2.9
 	 */
 	do_action( 'rcp_successful_registration', $member );
 
