@@ -193,7 +193,8 @@ function rcp_process_registration() {
 	do_action( 'rcp_form_processing', $_POST, $user_data['id'], $price );
 
 	// Create a pending payment
-	$amount = rcp_get_registration()->get_total( true, false ) + rcp_get_registration()->get_total_fees();
+	delete_user_meta( $user_data['id'], 'rcp_pending_payment_id' );
+	$amount = ( ! empty( $trial_duration ) && ! rcp_has_used_trial() ) ? 0.00 : rcp_get_registration()->get_total();
 	$payment_data = array(
 		'date'              => date( 'Y-m-d H:i:s', current_time( 'timestamp' ) ),
 		'subscription'      => $subscription->id,
@@ -229,9 +230,6 @@ function rcp_process_registration() {
 		// Remove trialing status, if it exists
 		if ( ! $trial_duration || $trial_duration && $member_has_trialed ) {
 			delete_user_meta( $user_data['id'], 'rcp_is_trialing' );
-		} else {
-			update_user_meta( $user_data['id'], 'rcp_has_trialed', 'yes' );
-			update_user_meta( $user_data['id'], 'rcp_is_trialing', 'yes' );
 		}
 
 		// log the new user in
@@ -983,6 +981,11 @@ function rcp_remove_subscription_data_on_failure( $gateway ) {
 		}
 	}
 
+	// Delete the pending payment.
+	if( ! empty( $gateway->user_id ) ) {
+		delete_user_meta( $gateway->user_id, 'rcp_pending_payment_id' );
+	}
+
 }
 add_action( 'rcp_registration_failed', 'rcp_remove_subscription_data_on_failure' );
 
@@ -993,14 +996,19 @@ add_action( 'rcp_registration_failed', 'rcp_remove_subscription_data_on_failure'
  *      - Increase discount code usage (if applicable).
  *      - Remove the role granted by the previous subscription level and apply new one.
  *
- * @param string $old_status Old payment status from before the update.
- * @param int $payment_id ID of the payment being completed.
- * @param RCP_Payment $payment Payment object.
+ * @uses rcp_set_as_member()
+ *
+ * @param string      $old_status Old payment status from before the update.
+ * @param int         $payment_id ID of the payment being completed.
+ * @param RCP_Payment $payment    Payment object.
+ *
+ * @since 2.9
+ * @return void
  */
 function rcp_complete_registration( $old_status, $payment_id, $payment ) {
 
 	$member              = new RCP_Member( $payment->user_id );
-	$pending_payment_id  = get_user_meta( $member->ID, 'rcp_pending_payment_id', true );
+	$pending_payment_id  = $member->get_pending_payment_id();
 
 	// This doesn't correspond to the most recent registration - bail.
 	if ( empty( $pending_payment_id ) || $pending_payment_id != $payment_id ) {
@@ -1016,14 +1024,23 @@ function rcp_complete_registration( $old_status, $payment_id, $payment ) {
 		if ( $subscription ) {
 			$subscription_id = $subscription->id;
 		}
+	} else {
+		$subscription = rcp_get_subscription_details( $subscription_id );
 	}
 
 	// This updates the expiration date, status, discount code usage, role, etc.
-	rcp_set_as_member( $payment->user_id, array(
+	$args = array(
 		'status'          => 'active',
 		'subscription_id' => $subscription_id,
 		'discount_code'   => $payment->discount_code
-	) );
+	);
+
+	if ( ! empty( $subscription->trial_duration ) && ! $member->is_trialing() ) {
+		$args['trial_duration']      = $subscription->trial_duration;
+		$args['trial_duration_unit'] = $subscription->trial_duration_unit;
+	}
+
+	rcp_set_as_member( $payment->user_id, $args );
 
 	// Delete the pending payment record.
 	delete_user_meta( $member->ID, 'rcp_pending_payment_id' );
@@ -1116,7 +1133,7 @@ function rcp_set_as_member( $user_id, $args = array() ) {
 	$expiration = $args['expiration'];
 	if ( empty( $expiration ) ) {
 		$force_now = $member->is_recurring();
-		$prorated  = $member->get_prorate_credit_amount();
+		$prorated  = $member->get_prorate_credit_amount(); // @todo I actually don't think this will work here..
 
 		if ( ! $force_now && ! empty( $prorated ) ) {
 			$force_now = true;
@@ -1147,7 +1164,7 @@ function rcp_set_as_member( $user_id, $args = array() ) {
 	 */
 
 	// This is so users can only sign up for one trial.
-	if ( 0 == $subscription_level->price && $subscription_level->duration > 0 ) {
+	if ( ( 0 == $subscription_level->price && $subscription_level->duration > 0 ) || ( ! empty( $args['trial_duration'] && ! $member->has_trialed() ) ) ) {
 		update_user_meta( $member->ID, 'rcp_has_trialed', 'yes' );
 		update_user_meta( $member->ID, 'rcp_is_trialing', 'yes' );
 	}

@@ -77,8 +77,8 @@ class RCP_Payments {
 
 		$args = wp_parse_args( $payment_data, $defaults );
 
-		if( $this->payment_exists( $args['transaction_id'] ) ) {
-			return;
+		if( ! empty( $args['transaction_id'] ) && $this->payment_exists( $args['transaction_id'] ) ) {
+			return false;
 		}
 
 		// Backwards compatibility: use subscription ID instead of name.

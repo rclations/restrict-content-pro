@@ -845,7 +845,15 @@ class RCP_Member extends WP_User {
 	 */
 	public function get_pending_subscription_id() {
 
-		return get_user_meta( $this->ID, 'rcp_pending_subscription_level', true );
+		$pending_level_id = get_user_meta( $this->ID, 'rcp_pending_subscription_level', true );
+		$pending_payment  = get_user_meta( $this->ID, 'rcp_pending_payment_id', true );
+
+		if ( ! empty( $pending_payment ) ) {
+			$payment          = new RCP_Payment( $pending_payment );
+			$pending_level_id = $payment->subscription;
+		}
+
+		return $pending_level_id;
 
 	}
 
@@ -896,7 +904,15 @@ class RCP_Member extends WP_User {
 	 */
 	public function get_pending_subscription_key() {
 
-		return get_user_meta( $this->ID, 'rcp_pending_subscription_key', true );
+		$pending_key      = get_user_meta( $this->ID, 'rcp_pending_subscription_key', true );
+		$pending_payment  = get_user_meta( $this->ID, 'rcp_pending_payment_id', true );
+
+		if ( ! empty( $pending_payment ) ) {
+			$payment     = new RCP_Payment( $pending_payment );
+			$pending_key = $payment->subscription_key;
+		}
+
+		return $pending_key;
 
 	}
 
@@ -947,6 +963,17 @@ class RCP_Member extends WP_User {
 		$payments = $payments->get_payments( array( 'user_id' => $this->ID ) );
 
 		return apply_filters( 'rcp_member_get_payments', $payments, $this->ID, $this );
+	}
+
+	/**
+	 * Retrieves the ID number of the currently pending payment.
+	 *
+	 * @access public
+	 * @since 2.9
+	 * @return int|bool ID of the pending payment or false if none.
+	 */
+	public function get_pending_payment_id() {
+		return get_user_meta( $this->ID, 'rcp_pending_payment_id', true );
 	}
 
 	/**

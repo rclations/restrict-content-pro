@@ -367,6 +367,7 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 			if ( $this->auto_renew ) {
 				$member->set_expiration_date( date( 'Y-m-d 23:59:59', $subscription->current_period_end ) );
 				$member->set_status( 'active' );
+				$member->set_subscription_id( $this->subscription_id );
 			}
 
 			do_action( 'rcp_stripe_signup', $this->user_id, $this );
@@ -481,6 +482,7 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 							'user_id' 			=> $member->ID,
 							'amount'            => '',
 							'transaction_id'    => '',
+							'status'            => 'complete'
 						);
 
 						if ( $event->type == 'charge.succeeded' ) {
@@ -511,7 +513,6 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 							} else {
 								$payment_data['amount']           = $invoice->lines->data[0]->amount / rcp_stripe_get_currency_multiplier();
 								$payment_data['transaction_id']   = $invoice->subscription; // trials don't get a charge ID. set the subscription ID.
-								$payment_data['is_trial_invoice'] = true;
 							}
 
 						}
@@ -532,15 +533,23 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 
 							}
 
-							$member->renew( $member->is_recurring(), 'active', $expiration );
+							$pending_payment_id = $member->get_pending_payment_id();
+							if ( ! empty( $pending_payment_id ) ) {
 
-							// These must be retrieved after the status is set to active in order for upgrades to work properly
-							$payment_data['subscription']     = $member->get_subscription_name();
-							$payment_data['subscription_key'] = $member->get_subscription_key();
+								// Completing a pending payment. Account activation is handled in rcp_complete_registration()
+								$payment = new RCP_Payment( absint( $pending_payment_id ) );
+								$payment->update( $payment_data );
 
-							// record this payment if it hasn't been recorded yet and it's not a trial invoice
-							if ( empty( $payment_data['is_trial_invoice'] ) ) {
+							} else {
+
+								// Inserting a new payment and renewing.
+								$member->renew( $member->is_recurring(), 'active', $expiration );
+
+								// These must be retrieved after the status is set to active in order for upgrades to work properly
+								$payment_data['subscription']     = $member->get_subscription_id();
+								$payment_data['subscription_key'] = $member->get_subscription_key();
 								$rcp_payments->insert( $payment_data );
+
 							}
 
 							do_action( 'rcp_stripe_charge_succeeded', $user, $payment_data, $event );

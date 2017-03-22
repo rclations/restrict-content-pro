@@ -285,7 +285,7 @@ add_action( 'rcp_set_status', 'rcp_email_on_activation', 11, 2 );
  */
 function rcp_email_on_free_trial( $status, $user_id ) {
 
-	if( 'active' == $status && rcp_is_trialing( $user_id ) ) {
+	if( 'active' == $status && rcp_is_trialing( $user_id ) && get_user_meta( $user_id, '_rcp_new_subscription', true ) ) {
 
 		// Send free trial welcome email.
 		rcp_email_subscription_status( $user_id, 'trial' );
@@ -337,15 +337,15 @@ add_action( 'rcp_set_status', 'rcp_email_on_cancellation', 11, 2 );
 /**
  * Triggers an email to the member when a payment is received.
  *
- * @param int   $payment_id ID of the payment.
- * @param array $args       Array of payment data.
- * @param float $amount     Amount of the payment.
+ * @param string      $old_status Old payment status from before the update.
+ * @param int         $payment_id ID of the payment being completed.
+ * @param RCP_Payment $payment    Payment object.
  *
  * @access  public
  * @since   2.3
  * @return  void
  */
-function rcp_email_payment_received( $payment_id, $args, $amount ) {
+function rcp_email_payment_received( $old_status, $payment_id, $payment ) {
 
 	global $rcp_options;
 
@@ -353,11 +353,15 @@ function rcp_email_payment_received( $payment_id, $args, $amount ) {
 		return;
 	}
 
-	$user_info = get_userdata( $args['user_id'] );
+	$user_info = get_userdata( $payment->user_id );
 
 	if( ! $user_info ) {
 		return;
 	}
+
+	$args = array(
+		'user_id' => $payment->user_id
+	); // @todo add other payment args
 
 	$message = ! empty( $rcp_options['payment_received_email'] ) ? $rcp_options['payment_received_email'] : false;
 	$message = apply_filters( 'rcp_payment_received_email', $message, $payment_id, $args );
@@ -373,7 +377,7 @@ function rcp_email_payment_received( $payment_id, $args, $amount ) {
 	$emails->send( $user_info->user_email, $rcp_options['payment_received_subject'], $message );
 
 }
-add_action( 'rcp_insert_payment', 'rcp_email_payment_received', 10, 3 );
+add_action( 'rcp_update_payment_status_complete', 'rcp_email_payment_received', 10, 3 );
 
 /**
  * Emails a member when a renewal payment fails.

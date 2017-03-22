@@ -66,6 +66,7 @@ $user       = get_userdata( $payment->user_id );
 				</th>
 				<td>
 					<select name="status" id="rcp-status">
+						<option value="pending"<?php selected( $payment->status, 'pending' ); ?>><?php _e( 'Pending', 'rcp' ); ?></option>
 						<option value="complete"<?php selected( $payment->status, 'complete' ); ?>><?php _e( 'Complete', 'rcp' ); ?></option>
 						<option value="refunded"<?php selected( $payment->status, 'refunded' ); ?>><?php _e( 'Refunded', 'rcp' ); ?></option>
 					</select>
