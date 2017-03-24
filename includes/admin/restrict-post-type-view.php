@@ -1,6 +1,8 @@
 <?php
 /**
- * restrict-post-type-view.php
+ * Restrict Post Type View
+ *
+ * HTML display of the restrict post type page.
  *
  * @package     restrict-content-pro
  * @subpackage  Admin/Restrict Post Type View
@@ -9,13 +11,9 @@
  * @since       2.9
  */
 
-$screen       = get_current_screen();
-$post_type    = ! empty( $screen->post_type ) ? $screen->post_type : 'post';
-$restrictions = rcp_get_post_type_restrictions( $post_type );
-if ( ! is_array( $restrictions ) ) {
-	$restrictions = array();
-}
-
+$screen            = get_current_screen();
+$post_type         = ! empty( $screen->post_type ) ? $screen->post_type : 'post';
+$restrictions      = rcp_get_post_type_restrictions( $post_type );
 $is_paid           = array_key_exists( 'is_paid', $restrictions ) ? true : false;
 $sub_levels        = array_key_exists( 'subscription_level', $restrictions ) ? $restrictions['subscription_level'] : false;
 $set_level         = is_array( $sub_levels ) ? '' : $sub_levels;
@@ -27,7 +25,8 @@ $level_set_display = ! empty( $sub_levels ) || ! empty( $is_paid ) ? '' : ' styl
 $levels_display    = is_array( $sub_levels ) ? '' : ' style="display:none;"';
 $role_set_display  = '' != $user_role ? '' : ' style="display:none;"';
 ?>
-<form method="POST" action="<?php echo esc_url( admin_url( 'edit.php?page=rcp-restrict&post_type=' . urlencode( $post_type ) ) ); ?>">
+<form method="POST" action="">
+	<p><?php _e( 'Use this form to restrict an entire post type. If set to "Everyone", you will be able to configure restrictions on a post-by-post basis.', 'rcp' ); ?></p>
 	<div id="rcp-metabox-field-restrict-by" class="rcp-metabox-field">
 		<p><strong><?php _e( 'Member access options', 'rcp' ); ?></strong></p>
 		<p>
@@ -37,7 +36,7 @@ $role_set_display  = '' != $user_role ? '' : ' style="display:none;"';
 		<p>
 			<label for="rcp-restrict-by" class="screen-reader-text"><?php _e( 'Select who should have access to this content', 'rcp' ); ?></label>
 			<select id="rcp-restrict-by" name="rcp_restrict_by">
-				<option value="unrestricted" <?php selected( true, ( empty( $sub_levels ) && empty( $access_level ) && empty( $is_paid ) ) ); ?>><?php _e( 'Everyone', 'rcp' ); ?></option>
+				<option value="unrestricted" <?php selected( true, ( empty( $sub_levels ) && empty( $access_level ) && empty( $is_paid ) ) ); ?>><?php _e( 'Everyone (or configure posts individually)', 'rcp' ); ?></option>
 				<option value="subscription-level"<?php selected( true, ! empty( $sub_levels ) || ! empty( $is_paid ) ); ?>><?php _e( 'Members of subscription level(s)', 'rcp' ); ?></option>
 				<option value="access-level"<?php selected( true, is_numeric( $access_level ) ); ?>><?php _e( 'Members with an access level', 'rcp' ); ?></option>
 				<option value="registered-users"<?php selected( true, empty( $sub_levels ) && ! is_numeric( $access_level ) && ! empty( $user_role ) && 'All' !== $user_role ); ?>><?php _e( 'Members with a certain role', 'rcp' ); ?></option>

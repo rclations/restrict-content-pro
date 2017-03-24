@@ -200,10 +200,8 @@ function rcp_save_post_type_restrictions() {
 	do_action( 'rcp_save_post_type_restrictions', $post_type );
 
 	$url = add_query_arg( array(
-		'post_type'   => urlencode( $post_type ),
-		'page'        => 'rcp-restrict',
 		'rcp_message' => 'post-type-updated'
-	) );
+	), rcp_get_restrict_post_type_page( $post_type ) );
 
 	wp_safe_redirect( $url );
 	exit;
@@ -211,3 +209,28 @@ function rcp_save_post_type_restrictions() {
 }
 
 add_action( 'admin_init', 'rcp_save_post_type_restrictions' );
+
+/**
+ * Returns the URL to the post type restriction page
+ *
+ * @param string $post_type
+ *
+ * @since 2.9
+ * @return string
+ */
+function rcp_get_restrict_post_type_page( $post_type = '' ) {
+	if ( empty( $post_type ) ) {
+		$post_type = get_post_type();
+	}
+
+	if ( 'post' == $post_type ) {
+		$restrict_url = add_query_arg( array( 'page' => 'rcp-restrict' ), admin_url( 'edit.php' ) );
+	} else {
+		$restrict_url = add_query_arg( array(
+			'post_type' => urlencode( $post_type ),
+			'page'      => urlencode( 'rcp-restrict-' . $post_type )
+		), admin_url( 'edit.php' ) );
+	}
+
+	return $restrict_url;
+}

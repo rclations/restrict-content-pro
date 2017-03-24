@@ -771,11 +771,11 @@ function rcp_get_restricted_post_types() {
  * @param string $post_type The post type to check.
  *
  * @since 2.9
- * @return array|false Array of restriction settings or false if post type is unrestricted.
+ * @return array Array of restriction settings.
  */
 function rcp_get_post_type_restrictions( $post_type ) {
 	$restricted_post_types = rcp_get_restricted_post_types();
-	$restrictions          = array_key_exists( $post_type, $restricted_post_types ) ? $restricted_post_types[ $post_type ] : false;
+	$restrictions          = array_key_exists( $post_type, $restricted_post_types ) ? $restricted_post_types[ $post_type ] : array();
 
 	return apply_filters( 'rcp_post_type_restrictions', $restrictions, $post_type, $restricted_post_types );
 }
