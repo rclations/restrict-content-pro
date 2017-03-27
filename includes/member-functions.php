@@ -1549,3 +1549,18 @@ function rcp_add_subscription_change_note( $subscription_id, $member_id, $member
 
 }
 add_action( 'rcp_member_pre_set_subscription_id', 'rcp_add_subscription_change_note', 10, 3 );
+
+/**
+ * Log error when duplicate payment is detected.
+ *
+ * @param string              $payment_txn_id Payment transaction ID.
+ * @param RCP_Member          $member         Member object.
+ * @param RCP_Payment_Gateway $gateway        Gateway object.
+ *
+ * @since 2.9
+ * @return void
+ */
+function rcp_log_duplicate_ipn_payment( $payment_txn_id, $member, $gateway ) {
+	rcp_log( sprintf( 'A duplicate payment was detected for user #%d. Check to make sure both payments weren\'t recorded. Transaction ID: %s', $member->ID, $payment_txn_id ) );
+}
+add_action( 'rcp_ipn_duplicate_payment', 'rcp_log_duplicate_ipn_payment', 10, 3 );

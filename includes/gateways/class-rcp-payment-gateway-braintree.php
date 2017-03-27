@@ -519,6 +519,8 @@ class RCP_Payment_Gateway_Braintree extends RCP_Payment_Gateway {
 			case 'subscription_charged_successfully':
 
 				if ( $rcp_payments->payment_exists( $transaction->id ) ) {
+					do_action( 'rcp_ipn_duplicate_payment', $transaction->id, $member, $this );
+
 					die( 'duplicate payment found' );
 				}
 

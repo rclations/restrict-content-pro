@@ -324,19 +324,7 @@ class RCP_Payment_Gateway_PayPal extends RCP_Payment_Gateway {
 				// only check for an existing payment if this is a payment IPD request
 				if( ! empty( $posted['txn_id'] ) && $rcp_payments->payment_exists( $posted['txn_id'] ) ) {
 
-					$log_data = array(
-						'post_title'    => __( 'Duplicate Payment', 'rcp' ),
-						'post_content'  =>  __( 'A duplicate payment was detected. The new payment was still recorded, so you may want to check into both payments.', 'rcp' ),
-						'post_parent'   => 0,
-						'log_type'      => 'gateway_error'
-					);
-
-					$log_meta = array(
-						'user_subscription' => $posted['item_name'],
-						'user_id'           => $user_id
-					);
-					$log_entry = WP_Logging::insert_log( $log_data, $log_meta );
-
+					do_action( 'rcp_ipn_duplicate_payment', $posted['txn_id'], $member, $this );
 
 					die( 'duplicate IPN detected' );
 				}
@@ -344,18 +332,7 @@ class RCP_Payment_Gateway_PayPal extends RCP_Payment_Gateway {
 				if( ! rcp_is_valid_currency( $currency_code ) ) {
 					// the currency code is invalid
 
-					$log_data = array(
-						'post_title'    => __( 'Invalid Currency Code', 'rcp' ),
-						'post_content'  =>  sprintf( __( 'The currency code in an IPN request did not match the site currency code. Payment data: %s', 'rcp' ), json_encode( $payment_data ) ),
-						'post_parent'   => 0,
-						'log_type'      => 'gateway_error'
-					);
-
-					$log_meta = array(
-						'user_subscription' => $posted['item_name'],
-						'user_id'           => $user_id
-					);
-					$log_entry = WP_Logging::insert_log( $log_data, $log_meta );
+					rcp_log( sprintf( 'The currenty code in a PayPal IPN request did not match the site currency code. Provided: %s', $currency_code ) );
 
 
 					die( 'invalid currency code' );

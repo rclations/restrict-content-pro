@@ -563,6 +563,8 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 
 						} else {
 
+							do_action( 'rcp_ipn_duplicate_payment', $payment_data['transaction_id'], $member, $this );
+
 							die( 'duplicate payment found' );
 
 						}
