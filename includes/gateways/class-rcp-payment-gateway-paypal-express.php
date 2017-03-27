@@ -114,6 +114,7 @@ class RCP_Payment_Gateway_PayPal_Express extends RCP_Payment_Gateway {
 
 		if( is_wp_error( $request ) ) {
 
+			$this->error_message = $request->get_error_message();
 			do_action( 'rcp_registration_failed', $this );
 			do_action( 'rcp_paypal_express_signup_payment_failed', $request, $this );
 
@@ -130,6 +131,7 @@ class RCP_Payment_Gateway_PayPal_Express extends RCP_Payment_Gateway {
 
 			if( 'failure' === strtolower( $body['ACK'] ) ) {
 
+				$this->error_message = $body['L_LONGMESSAGE0'];
 				do_action( 'rcp_registration_failed', $this );
 
 				$error = '<p>' . __( 'PayPal token creation failed.', 'rcp' ) . '</p>';
@@ -523,6 +525,7 @@ class RCP_Payment_Gateway_PayPal_Express extends RCP_Payment_Gateway {
 						$member->set_status( 'pending' );
 						$member->add_note( __( 'Initial payment failed in PayPal Express.', 'rcp' ) );
 
+						$this->error_message = __( 'Initial payment failed.', 'rcp' );
 						do_action( 'rcp_registration_failed', $this );
 						do_action( 'rcp_paypal_express_initial_payment_failed', $member, $posted, $this );
 					} else {

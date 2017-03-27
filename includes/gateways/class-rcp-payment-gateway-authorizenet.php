@@ -160,6 +160,8 @@ class RCP_Payment_Gateway_Authorizenet extends RCP_Payment_Gateway {
 
 			} else {
 
+				$this->error_message = $response->getErrorMessage();
+
 				do_action( 'rcp_registration_failed', $this );
 
 				wp_die( $response->getErrorMessage(), __( 'Error', 'rcp' ), array( 'response' => '401' ) );
@@ -167,6 +169,7 @@ class RCP_Payment_Gateway_Authorizenet extends RCP_Payment_Gateway {
 			}
 
 		} catch ( AuthorizeNetException $e ) {
+			$this->error_message = $e->getMessage();
 			do_action( 'rcp_registration_failed', $this );
 			wp_die( $e->getMessage(), __( 'Error', 'rcp' ), array( 'response' => '401' ) );
 		}
