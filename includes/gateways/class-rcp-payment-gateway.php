@@ -30,6 +30,15 @@ class RCP_Payment_Gateway {
 	public $subscription_data;
 	public $webhook_event_id;
 
+	/**
+	 * Used for saving an error message that occurs during registration.
+	 *
+	 * @var string
+	 * @access public
+	 * @since 2.9
+	 */
+	public $error_message;
+
 	public function __construct( $subscription_data = array() ) {
 
 		$this->test_mode = rcp_is_sandbox();

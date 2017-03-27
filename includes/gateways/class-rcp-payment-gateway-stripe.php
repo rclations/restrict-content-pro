@@ -407,6 +407,8 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 		$body = $e->getJsonBody();
 		$err  = $body['error'];
 
+		$this->error_message = $err['message'];
+
 		do_action( 'rcp_registration_failed', $this );
 		do_action( 'rcp_stripe_signup_payment_failed', $err, $this );
 
@@ -416,8 +418,6 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 		}
 		$error .= "<p>Status: " . $e->getHttpStatus() ."</p>";
 		$error .= "<p>Message: " . $err['message'] . "</p>";
-
-		rcp_log( sprintf( 'Stripe registration failure for user #%d: %s', $this->user_id, $err['message'] ) );
 
 		wp_die( $error, __( 'Error', 'rcp' ), array( 'response' => 401 ) );
 	}

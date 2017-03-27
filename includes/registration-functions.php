@@ -1029,5 +1029,11 @@ function rcp_remove_subscription_data_on_failure( $gateway ) {
 		}
 	}
 
+	// Log error.
+	$gateway_id   = isset( $gateway->subscription_data['post_data']['rcp_gateway'] ) ? $gateway->subscription_data['post_data']['rcp_gateway'] : '(Unknown gateway)';
+	$gateways     = rcp_get_payment_gateways();
+	$gateway_name = ( ! empty( $gateway_id ) && array_key_exists( $gateway_id, $gateways ) ) ? $gateways[ $gateway_id ]['admin_label'] : '';
+	rcp_log( sprintf( '%s registration failed for user #%d. Error message: %s', $gateway_name, $gateway->user_id, $gateway->error_message ) );
+
 }
 add_action( 'rcp_registration_failed', 'rcp_remove_subscription_data_on_failure' );
