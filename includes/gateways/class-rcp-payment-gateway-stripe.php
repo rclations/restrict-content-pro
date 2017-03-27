@@ -417,6 +417,8 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 		$error .= "<p>Status: " . $e->getHttpStatus() ."</p>";
 		$error .= "<p>Message: " . $err['message'] . "</p>";
 
+		rcp_log( sprintf( 'Stripe registration failure for user #%d: %s', $this->user_id, $err['message'] ) );
+
 		wp_die( $error, __( 'Error', 'rcp' ), array( 'response' => 401 ) );
 	}
 

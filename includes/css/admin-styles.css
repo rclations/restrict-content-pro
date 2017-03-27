@@ -324,6 +324,10 @@
 	white-space: pre;
 }
 
+#rcp-debug-log .button {
+	margin-right: 8px;
+}
+
 /* Tables
 -------------------------------------------------------------- */
 

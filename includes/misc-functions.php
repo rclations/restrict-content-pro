@@ -985,3 +985,26 @@ function rcp_delete_transient_post_ids_assigned_to_restricted_terms( $term_id, $
 	delete_transient( 'rcp_post_ids_assigned_to_restricted_terms' );
 }
 add_action( 'edited_term', 'rcp_delete_transient_post_ids_assigned_to_restricted_terms', 10, 3 );
+
+/**
+ * Log a message to the debug file if debug mode is enabled.
+ *
+ * @param string $message Message to log.
+ *
+ * @since 2.9
+ * @return void
+ */
+function rcp_log( $message = '' ) {
+	global $rcp_options;
+
+	if ( empty( $rcp_options['debug_mode'] ) ) {
+		return;
+	}
+
+	/**
+	 * @var RCP_Logging $rcp_logs
+	 */
+	global $rcp_logs;
+
+	$rcp_logs->log( $message );
+}

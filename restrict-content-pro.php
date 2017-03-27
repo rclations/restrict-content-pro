@@ -249,6 +249,7 @@ if( version_compare( PHP_VERSION, '5.3', '<' ) ) {
 	include( RCP_PLUGIN_DIR . 'includes/class-rcp-emails.php' );
 	include( RCP_PLUGIN_DIR . 'includes/class-rcp-integrations.php' );
 	include( RCP_PLUGIN_DIR . 'includes/class-rcp-levels.php' );
+	include( RCP_PLUGIN_DIR . 'includes/class-rcp-logging.php' );
 	include( RCP_PLUGIN_DIR . 'includes/class-rcp-member.php' );
 	include( RCP_PLUGIN_DIR . 'includes/class-rcp-payments.php' );
 	include( RCP_PLUGIN_DIR . 'includes/class-rcp-discounts.php' );
@@ -282,6 +283,7 @@ if( version_compare( PHP_VERSION, '5.3', '<' ) ) {
 	include( RCP_PLUGIN_DIR . 'includes/shortcodes.php' );
 	include( RCP_PLUGIN_DIR . 'includes/template-functions.php' );
 
+	// @todo remove
 	if( !class_exists( 'WP_Logging' ) ) {
 		include( RCP_PLUGIN_DIR . 'includes/libraries/class-wp-logging.php' );
 	}
