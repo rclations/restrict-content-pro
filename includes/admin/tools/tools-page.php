@@ -130,17 +130,14 @@ add_action( 'admin_init', 'rcp_tools_sysinfo_download' );
  */
 function rcp_tools_display_debug() {
 
-	/**
-	 * @var RCP_Logging $rcp_logs
-	 */
-	global $rcp_logs;
+	$logs = new RCP_Logging();
 	?>
 	<div class="postbox">
 		<h3><?php _e( 'Debug Log', 'rcp' ); ?></h3>
 		<div class="inside">
 			<form id="rcp-debug-log" method="post">
 				<p><label for="rcp-debug-log-contents"><?php _e( 'Any Restrict Content Pro errors that occur will be logged to this file.', 'rcp' ); ?></label></p>
-				<textarea id="rcp-debug-log-contents" name="rcp-debug-log-contents" class="large-text" rows="15"><?php echo esc_textarea( $rcp_logs->get_log() ); ?></textarea>
+				<textarea id="rcp-debug-log-contents" name="rcp-debug-log-contents" class="large-text" rows="15"><?php echo esc_textarea( $logs->get_log() ); ?></textarea>
 				<p class="submit">
 					<input type="hidden" name="rcp-action" value="submit_debug_log">
 					<?php
@@ -191,12 +188,8 @@ function rcp_submit_debug_log() {
 	} elseif ( isset( $_POST['rcp_clear_debug_log'] ) ) {
 
 		// Clear debug log.
-		/**
-		 * @var RCP_Logging $rcp_logs
-		 */
-		global $rcp_logs;
-
-		$rcp_logs->clear_log();
+		$logs = new RCP_Logging();
+		$logs->clear_log();
 
 		wp_safe_redirect( admin_url( 'admin.php?page=rcp-tools&tab=debug') );
 		exit;

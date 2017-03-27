@@ -153,5 +153,3 @@ class RCP_Logging {
 	}
 
 }
-
-$GLOBALS['rcp_logs'] = new RCP_Logging();

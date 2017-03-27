@@ -1001,10 +1001,6 @@ function rcp_log( $message = '' ) {
 		return;
 	}
 
-	/**
-	 * @var RCP_Logging $rcp_logs
-	 */
-	global $rcp_logs;
-
-	$rcp_logs->log( $message );
+	$logs = new RCP_Logging();
+	$logs->log( $message );
 }
