@@ -408,3 +408,26 @@ function rcp_filter_email_tags( $message, $user_id, $display_name ) {
 function rcp_rstrstr( $haystack, $needle ) {
 	return substr( $haystack, 0, strpos( $haystack, $needle ) );
 }
+
+/**
+ * Log Types.
+ *
+ * Sets up the valid log types for WP_Logging.
+ *
+ * @deprecated 2.9 Using new RCP_Logging class instead.
+ *
+ * @param array $types Existing log types.
+ *
+ * @access private
+ * @since  1.3.4
+ * @return array
+ */
+function rcp_log_types( $types ) {
+
+	$types = array(
+		'gateway_error'
+	);
+	return $types;
+
+}
+add_filter( 'wp_log_types', 'rcp_log_types' );
