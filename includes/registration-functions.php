@@ -1033,7 +1033,8 @@ function rcp_complete_registration( $old_status, $payment_id, $payment ) {
 	$args = array(
 		'status'          => 'active',
 		'subscription_id' => $subscription_id,
-		'discount_code'   => $payment->discount_code
+		'discount_code'   => $payment->discount_code,
+	    'recurring'       => $member->is_recurring()
 	);
 
 	if ( empty( $payment->amount ) && ! empty( $subscription->trial_duration ) && ! $member->is_trialing() ) {
@@ -1068,7 +1069,9 @@ function rcp_set_as_member( $user_id, $args = array() ) {
 		'discount_code'       => '',    // To add to their profile and increase usage.
 		'subscription_key'    => '',
 		'trial_duration'      => false, // To set as trialing.
-		'trial_duration_unit' => 'day'
+		'trial_duration_unit' => 'day',
+	    'recurring'           => false,
+	    'payment_profile_id'  => ''
 	);
 
 	$args = wp_parse_args( $args, $defaults );
@@ -1087,6 +1090,29 @@ function rcp_set_as_member( $user_id, $args = array() ) {
 	if ( empty( $subscription_level ) ) {
 		return false;
 	}
+
+	/*
+	 * Expiration date
+	 * Calculate it if not provided.
+	 */
+	$expiration = $args['expiration'];
+	if ( empty( $expiration ) ) {
+		$force_now = $member->is_recurring();
+		$prorated  = $member->get_prorate_credit_amount(); // @todo I actually don't think this will work here..
+
+		if ( ! $force_now && ! empty( $prorated ) ) {
+			$force_now = true;
+		}
+
+		$expiration = $member->calculate_expiration( $force_now, $args['trial_duration'] );
+	}
+	$member->set_expiration_date( $expiration );
+
+	/*
+	 * Set the subscription ID and key
+	 * This needs to happen after setting the expiration date in order
+	 * for the prorate credit calculation to work properly.
+	 */
 
 	$member->set_subscription_id( $args['subscription_id'] );
 
@@ -1127,23 +1153,6 @@ function rcp_set_as_member( $user_id, $args = array() ) {
 	$member->add_role( apply_filters( 'rcp_default_user_level', $role, $subscription_level->id ) );
 
 	/*
-	 * Expiration date
-	 * Calculate it if not provided.
-	 */
-	$expiration = $args['expiration'];
-	if ( empty( $expiration ) ) {
-		$force_now = $member->is_recurring();
-		$prorated  = $member->get_prorate_credit_amount(); // @todo I actually don't think this will work here..
-
-		if ( ! $force_now && ! empty( $prorated ) ) {
-			$force_now = true;
-		}
-
-		$expiration = $member->calculate_expiration( $force_now, $args['trial_duration'] );
-	}
-	$member->set_expiration_date( $expiration );
-
-	/*
 	 * Set the status
 	 * Determine it automatically if not provided.
 	 */
@@ -1171,6 +1180,16 @@ function rcp_set_as_member( $user_id, $args = array() ) {
 
 	// Set join date for this subscription.
 	$member->set_joined_date( '', $subscription_level->id );
+
+	// Recurring.
+	if ( ! empty( $args['recurring'] ) ) {
+		$member->set_recurring();
+	}
+
+	// Payment profile ID
+	if ( ! empty( $args['payment_profile_id'] ) ) {
+		$member->set_payment_profile_id( $args['payment_profile_id'] );
+	}
 
 	/**
 	 * Registration successful! Hook into this action if you need to execute code
