@@ -29,15 +29,29 @@ function rcp_is_sandbox(){
  * @return bool True if the post is paid only, false if not.
  */
 function rcp_is_paid_content( $post_id ) {
-	if ( $post_id == '' || ! is_int( $post_id ) )
+	if ( $post_id == '' || ! is_int( $post_id ) ) {
 		$post_id = get_the_ID();
+	}
 
 	$return = false;
+	$post_type_restrictions = rcp_get_post_type_restrictions( get_post_type( $post_id) );
 
-	$is_paid = get_post_meta( $post_id, '_is_paid', true );
-	if ( $is_paid ) {
-		// this post is for paid users only
-		$return = true;
+	if ( ! empty( $post_type_restrictions ) ) {
+
+		// Check post type restrictions.
+		if ( array_key_exists('is_paid', $post_type_restrictions ) ) {
+			$return = true;
+		}
+
+	} else {
+
+		// Check regular post.
+		$is_paid = get_post_meta( $post_id, '_is_paid', true );
+		if ( $is_paid ) {
+			// this post is for paid users only
+			$return = true;
+		}
+
 	}
 
 	return (bool) apply_filters( 'rcp_is_paid_content', $return, $post_id );
@@ -686,8 +700,13 @@ function rcp_is_restricted_content( $post_id ) {
 
 	$post_id = absint( $post_id );
 
+	// Check post type restrictions.
+	$restricted = rcp_is_restricted_post_type( get_post_type( $post_id ) );
+
 	// Check post restrictions.
-	$restricted = rcp_has_post_restrictions( $post_id );
+	if ( ! $restricted ) {
+		$restricted = rcp_has_post_restrictions( $post_id );
+	}
 
 	// Check if the post is restricted via a term.
 	if ( ! $restricted ) {
@@ -695,12 +714,6 @@ function rcp_is_restricted_content( $post_id ) {
 		if ( in_array( $post_id, $term_restricted_post_ids ) ) {
 			$restricted = true;
 		}
-	}
-
-	// Check post type restrictions.
-	if ( ! $restricted ) {
-		$post_type_restrictions = rcp_get_post_type_restrictions( get_post_type( $post_id ) );
-		$restricted             = ! empty( $post_type_restrictions );
 	}
 
 	return apply_filters( 'rcp_is_restricted_content', $restricted, $post_id );
@@ -778,6 +791,20 @@ function rcp_get_post_type_restrictions( $post_type ) {
 	$restrictions          = array_key_exists( $post_type, $restricted_post_types ) ? $restricted_post_types[ $post_type ] : array();
 
 	return apply_filters( 'rcp_post_type_restrictions', $restrictions, $post_type, $restricted_post_types );
+}
+
+/**
+ * Checks to see if a given post type has global restrictions applied.
+ *
+ * @param string $post_type The post type to check.
+ *
+ * @since 2.9
+ * @return bool True if the post type is restricted in some way.
+ */
+function rcp_is_restricted_post_type( $post_type ) {
+	$restrictions = rcp_get_post_type_restrictions( $post_type );
+
+	return ! empty( $restrictions );
 }
 
 /**
