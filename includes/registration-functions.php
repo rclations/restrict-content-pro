@@ -1173,7 +1173,7 @@ function rcp_set_as_member( $user_id, $args = array() ) {
 	 */
 
 	// This is so users can only sign up for one trial.
-	if ( ( 0 == $subscription_level->price && $subscription_level->duration > 0 ) || ( ! empty( $args['trial_duration'] && ! $member->has_trialed() ) ) ) {
+	if ( ( 0 == $subscription_level->price && $subscription_level->duration > 0 ) || ( ! empty( $args['trial_duration'] )&& ! $member->has_trialed() ) ) {
 		update_user_meta( $member->ID, 'rcp_has_trialed', 'yes' );
 		update_user_meta( $member->ID, 'rcp_is_trialing', 'yes' );
 	}
