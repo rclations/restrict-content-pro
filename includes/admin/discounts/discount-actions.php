@@ -59,7 +59,7 @@ function rcp_process_add_discount() {
 	exit;
 
 }
-add_action( 'rcp_add-discount', 'rcp_process_add_discount' );
+add_action( 'rcp_action_add-discount', 'rcp_process_add_discount' );
 
 /**
  * Edit an existing discount code
@@ -108,7 +108,7 @@ function rcp_process_edit_discount() {
 	exit;
 
 }
-add_action( 'rcp_edit-discount', 'rcp_process_edit_discount' );
+add_action( 'rcp_action_edit-discount', 'rcp_process_edit_discount' );
 
 /**
  * Delete a discount code
@@ -117,6 +117,10 @@ add_action( 'rcp_edit-discount', 'rcp_process_edit_discount' );
  * @return void
  */
 function rcp_process_delete_discount() {
+
+	if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'rcp-delete-discount' ) ) {
+		wp_die( __( 'Nonce verification failed.', 'rcp' ) );
+	}
 
 	if ( ! current_user_can( 'rcp_manage_discounts' ) ) {
 		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ) );
@@ -131,7 +135,7 @@ function rcp_process_delete_discount() {
 	$discounts->delete( $discount_id );
 
 }
-add_action( 'rcp_delete_discount_code', 'rcp_process_delete_discount' );
+add_action( 'rcp_action_delete_discount_code', 'rcp_process_delete_discount' );
 
 /**
  * Activate a discount code
@@ -140,6 +144,10 @@ add_action( 'rcp_delete_discount_code', 'rcp_process_delete_discount' );
  * @return void
  */
 function rcp_process_activate_discount() {
+
+	if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'rcp-activate-discount' ) ) {
+		wp_die( __( 'Nonce verification failed.', 'rcp' ) );
+	}
 
 	if ( ! current_user_can( 'rcp_manage_discounts' ) ) {
 		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ) );
@@ -153,7 +161,7 @@ function rcp_process_activate_discount() {
 	$discounts->update( absint( $_GET['discount_id'] ), array( 'status' => 'active' ) );
 
 }
-add_action( 'rcp_activate_discount', 'rcp_process_activate_discount' );
+add_action( 'rcp_action_activate_discount', 'rcp_process_activate_discount' );
 
 /**
  * Deactivate a discount code
@@ -162,6 +170,10 @@ add_action( 'rcp_activate_discount', 'rcp_process_activate_discount' );
  * @return void
  */
 function rcp_process_deactivate_discount() {
+
+	if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'rcp-deactivate-discount' ) ) {
+		wp_die( __( 'Nonce verification failed.', 'rcp' ) );
+	}
 
 	if ( ! current_user_can( 'rcp_manage_discounts' ) ) {
 		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ) );
@@ -175,4 +187,4 @@ function rcp_process_deactivate_discount() {
 	$discounts->update( absint( $_GET['discount_id'] ), array( 'status' => 'disabled' ) );
 
 }
-add_action( 'rcp_deactivate_discount', 'rcp_process_deactivate_discount' );
+add_action( 'rcp_action_deactivate_discount', 'rcp_process_deactivate_discount' );

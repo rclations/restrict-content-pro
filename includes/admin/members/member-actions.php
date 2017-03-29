@@ -105,7 +105,7 @@ function rcp_process_edit_member() {
 	exit;
 
 }
-add_action( 'rcp_edit-member', 'rcp_process_edit_member' );
+add_action( 'rcp_action_edit-member', 'rcp_process_edit_member' );
 
 /**
  * Add a subscription to an existing member
@@ -182,7 +182,7 @@ function rcp_process_add_member_subscription() {
 	exit;
 
 }
-add_action( 'rcp_add-subscription', 'rcp_process_add_member_subscription' );
+add_action( 'rcp_action_add-subscription', 'rcp_process_add_member_subscription' );
 
 /**
  * Process bulk edit members
@@ -247,7 +247,7 @@ function rcp_process_bulk_edit_members() {
 	exit;
 
 }
-add_action( 'rcp_bulk_edit_members', 'rcp_process_bulk_edit_members' );
+add_action( 'rcp_action_bulk_edit_members', 'rcp_process_bulk_edit_members' );
 
 /**
  * Cancel a member from the Members table
@@ -256,7 +256,7 @@ add_action( 'rcp_bulk_edit_members', 'rcp_process_bulk_edit_members' );
  * @return void
  */
 function rcp_process_cancel_member() {
-	
+
 	if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'rcp-cancel-nonce' ) ) {
 		wp_die( __( 'Nonce verification failed.', 'rcp' ) );
 	}
@@ -274,7 +274,7 @@ function rcp_process_cancel_member() {
 	exit;
 
 }
-add_action( 'rcp_cancel_member', 'rcp_process_cancel_member' );
+add_action( 'rcp_action_cancel_member', 'rcp_process_cancel_member' );
 
 /**
  * Re-send a member's verification email
@@ -301,4 +301,4 @@ function rcp_process_resend_verification() {
 	exit;
 
 }
-add_action( 'rcp_send_verification', 'rcp_process_resend_verification' );
+add_action( 'rcp_action_send_verification', 'rcp_process_resend_verification' );

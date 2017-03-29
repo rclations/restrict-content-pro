@@ -20,11 +20,11 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  */
 function rcp_process_actions() {
 	if ( isset( $_POST['rcp-action'] ) ) {
-		do_action( 'rcp_' . $_POST['rcp-action'], $_POST );
+		do_action( 'rcp_action_' . $_POST['rcp-action'], $_POST );
 	}
 
 	if ( isset( $_GET['rcp-action'] ) ) {
-		do_action( 'rcp_' . $_GET['rcp-action'], $_GET );
+		do_action( 'rcp_action_' . $_GET['rcp-action'], $_GET );
 	}
 }
 add_action( 'admin_init', 'rcp_process_actions' );

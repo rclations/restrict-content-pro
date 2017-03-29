@@ -62,7 +62,7 @@ function rcp_process_add_payment() {
 	exit;
 
 }
-add_action( 'rcp_add-payment', 'rcp_process_add_payment' );
+add_action( 'rcp_action_add-payment', 'rcp_process_add_payment' );
 
 /**
  * Edit an existing payment
@@ -114,7 +114,7 @@ function rcp_process_edit_payment() {
 	exit;
 
 }
-add_action( 'rcp_edit-payment', 'rcp_process_edit_payment' );
+add_action( 'rcp_action_edit-payment', 'rcp_process_edit_payment' );
 
 /**
  * Delete a payment
@@ -138,4 +138,4 @@ function rcp_process_delete_payment() {
 	exit;
 
 }
-add_action( 'rcp_delete-payment', 'rcp_process_delete_payment' );
+add_action( 'rcp_action_delete-payment', 'rcp_process_delete_payment' );

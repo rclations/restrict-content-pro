@@ -47,7 +47,7 @@ function rcp_process_add_subscription_level() {
 	exit;
 
 }
-add_action( 'rcp_add-level', 'rcp_process_add_subscription_level' );
+add_action( 'rcp_action_add-level', 'rcp_process_add_subscription_level' );
 
 /**
  * Edit an existing subscription level
@@ -78,7 +78,7 @@ function rcp_process_edit_subscription_level() {
 	exit;
 
 }
-add_action( 'rcp_edit-subscription', 'rcp_process_edit_subscription_level' );
+add_action( 'rcp_action_edit-subscription', 'rcp_process_edit_subscription_level' );
 
 /**
  * Delete a subscription level
@@ -87,6 +87,10 @@ add_action( 'rcp_edit-subscription', 'rcp_process_edit_subscription_level' );
  * @return void
  */
 function rcp_process_delete_subscription_level() {
+
+	if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'rcp-delete-subscription-level' ) ) {
+		wp_die( __( 'Nonce verification failed.', 'rcp' ) );
+	}
 
 	if ( ! current_user_can( 'rcp_manage_levels' ) ) {
 		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ) );
@@ -112,7 +116,7 @@ function rcp_process_delete_subscription_level() {
 	$levels->remove_all_meta_for_level_id( $level_id );
 
 }
-add_action( 'rcp_delete_subscription', 'rcp_process_delete_subscription_level' );
+add_action( 'rcp_action_delete_subscription', 'rcp_process_delete_subscription_level' );
 
 /**
  * Activate a subscription level
@@ -121,6 +125,10 @@ add_action( 'rcp_delete_subscription', 'rcp_process_delete_subscription_level' )
  * @return void
  */
 function rcp_process_activate_subscription() {
+
+	if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'rcp-activate-subscription-level' ) ) {
+		wp_die( __( 'Nonce verification failed.', 'rcp' ) );
+	}
 
 	if ( ! current_user_can( 'rcp_manage_levels' ) ) {
 		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ) );
@@ -136,7 +144,7 @@ function rcp_process_activate_subscription() {
 	delete_transient( 'rcp_subscription_levels' );
 
 }
-add_action( 'rcp_activate_subscription', 'rcp_process_activate_subscription' );
+add_action( 'rcp_action_activate_subscription', 'rcp_process_activate_subscription' );
 
 /**
  * Deactivate a subscription level
@@ -145,6 +153,10 @@ add_action( 'rcp_activate_subscription', 'rcp_process_activate_subscription' );
  * @return void
  */
 function rcp_process_deactivate_subscription() {
+
+	if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'rcp-deactivate-subscription-level' ) ) {
+		wp_die( __( 'Nonce verification failed.', 'rcp' ) );
+	}
 
 	if ( ! current_user_can( 'rcp_manage_levels' ) ) {
 		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ) );
@@ -160,4 +172,4 @@ function rcp_process_deactivate_subscription() {
 	delete_transient( 'rcp_subscription_levels' );
 
 }
-add_action( 'rcp_deactivate_subscription', 'rcp_process_deactivate_subscription' );
+add_action( 'rcp_action_deactivate_subscription', 'rcp_process_deactivate_subscription' );
