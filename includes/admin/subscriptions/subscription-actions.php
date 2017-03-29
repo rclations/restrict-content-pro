@@ -1,0 +1,163 @@
+<?php
+/**
+ * Subscription Level Actions
+ *
+ * @package     restrict-content-pro
+ * @subpackage  Admin/Subscription Actions
+ * @copyright   Copyright (c) 2017, Restrict Content Pro
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       2.9
+ */
+
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+/**
+ * Add a new subscription level
+ *
+ * @since 2.9
+ * @return void
+ */
+function rcp_process_add_subscription_level() {
+
+	if ( ! wp_verify_nonce( $_POST['rcp_add_level_nonce'], 'rcp_add_level_nonce' ) ) {
+		wp_die( __( 'Nonce verification failed.', 'rcp' ) );
+	}
+
+	if ( ! current_user_can( 'rcp_manage_levels' ) ) {
+		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ) );
+	}
+
+	if ( empty( $_POST['name'] ) ) {
+		$url = admin_url( 'admin.php?page=rcp-member-levels&rcp_message=level_missing_fields' );
+		wp_safe_redirect( esc_url_raw( $url ) );
+		exit;
+	}
+
+	$levels = new RCP_Levels();
+
+	$level_id = $levels->insert( $_POST );
+
+	if ( $level_id ) {
+		$url = get_bloginfo( 'wpurl' ) . '/wp-admin/admin.php?page=rcp-member-levels&rcp_message=level_added';
+	} else {
+		$url = get_bloginfo( 'wpurl' ) . '/wp-admin/admin.php?page=rcp-member-levels&rcp_message=level_not_added';
+	}
+	wp_safe_redirect( $url );
+	exit;
+
+}
+add_action( 'rcp_add-level', 'rcp_process_add_subscription_level' );
+
+/**
+ * Edit an existing subscription level
+ *
+ * @since 2.9
+ * @return void
+ */
+function rcp_process_edit_subscription_level() {
+
+	if ( ! wp_verify_nonce( $_POST['rcp_edit_level_nonce'], 'rcp_edit_level_nonce' ) ) {
+		wp_die( __( 'Nonce verification failed.', 'rcp' ) );
+	}
+
+	if ( ! current_user_can( 'rcp_manage_levels' ) ) {
+		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ) );
+	}
+
+	$levels = new RCP_Levels();
+	$update = $levels->update( $_POST['subscription_id'], $_POST );
+
+	if ( $update ) {
+		$url = get_bloginfo( 'wpurl' ) . '/wp-admin/admin.php?page=rcp-member-levels&rcp_message=level_updated';
+	} else {
+		$url = get_bloginfo( 'wpurl' ) . '/wp-admin/admin.php?page=rcp-member-levels&rcp_message=level_not_updated';
+	}
+
+	wp_safe_redirect( $url );
+	exit;
+
+}
+add_action( 'rcp_edit-subscription', 'rcp_process_edit_subscription_level' );
+
+/**
+ * Delete a subscription level
+ *
+ * @since 2.9
+ * @return void
+ */
+function rcp_process_delete_subscription_level() {
+
+	if ( ! current_user_can( 'rcp_manage_levels' ) ) {
+		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ) );
+	}
+
+	if ( ! isset( $_GET['level_id'] ) ) {
+		wp_die( __( 'Please choose a subscription level.', 'rcp' ) );
+	}
+
+	$level_id = absint( $_GET['level_id'] );
+
+	$members_of_subscription = rcp_get_members_of_subscription( $level_id );
+
+	// Cancel all active members of this subscription.
+	if ( $members_of_subscription ) {
+		foreach ( $members_of_subscription as $member ) {
+			rcp_set_status( $member, 'cancelled' );
+		}
+	}
+
+	$levels = new RCP_Levels();
+	$levels->remove( $level_id );
+	$levels->remove_all_meta_for_level_id( $level_id );
+
+}
+add_action( 'rcp_delete_subscription', 'rcp_process_delete_subscription_level' );
+
+/**
+ * Activate a subscription level
+ *
+ * @since 2.9
+ * @return void
+ */
+function rcp_process_activate_subscription() {
+
+	if ( ! current_user_can( 'rcp_manage_levels' ) ) {
+		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ) );
+	}
+
+	if ( ! isset( $_GET['level_id'] ) ) {
+		wp_die( __( 'Please choose a subscription level.', 'rcp' ) );
+	}
+
+	$level_id = absint( $_GET['level_id'] );
+	$levels   = new RCP_Levels();
+	$update   = $levels->update( $level_id, array( 'status' => 'active' ) );
+	delete_transient( 'rcp_subscription_levels' );
+
+}
+add_action( 'rcp_activate_subscription', 'rcp_process_activate_subscription' );
+
+/**
+ * Deactivate a subscription level
+ *
+ * @since 2.9
+ * @return void
+ */
+function rcp_process_deactivate_subscription() {
+
+	if ( ! current_user_can( 'rcp_manage_levels' ) ) {
+		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ) );
+	}
+
+	if ( ! isset( $_GET['level_id'] ) ) {
+		wp_die( __( 'Please choose a subscription level.', 'rcp' ) );
+	}
+
+	$level_id = absint( $_GET['level_id'] );
+	$levels   = new RCP_Levels();
+	$update   = $levels->update( $level_id, array( 'status' => 'inactive' ) );
+	delete_transient( 'rcp_subscription_levels' );
+
+}
+add_action( 'rcp_deactivate_subscription', 'rcp_process_deactivate_subscription' );
