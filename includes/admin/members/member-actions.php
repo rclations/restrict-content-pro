@@ -256,6 +256,10 @@ add_action( 'rcp_bulk_edit_members', 'rcp_process_bulk_edit_members' );
  * @return void
  */
 function rcp_process_cancel_member() {
+	
+	if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'rcp-cancel-nonce' ) ) {
+		wp_die( __( 'Nonce verification failed.', 'rcp' ) );
+	}
 
 	if ( ! current_user_can( 'rcp_manage_members' ) ) {
 		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ) );
