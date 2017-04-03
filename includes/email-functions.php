@@ -359,9 +359,7 @@ function rcp_email_payment_received( $old_status, $payment_id, $payment ) {
 		return;
 	}
 
-	$args = array(
-		'user_id' => $payment->user_id
-	); // @todo add other payment args
+	$args = (array) $payment;
 
 	$message = ! empty( $rcp_options['payment_received_email'] ) ? $rcp_options['payment_received_email'] : false;
 	$message = apply_filters( 'rcp_payment_received_email', $message, $payment_id, $args );

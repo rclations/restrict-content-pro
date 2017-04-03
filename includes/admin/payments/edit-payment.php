@@ -9,8 +9,7 @@
  */
 
 $payment_id = ! empty( $_GET['payment_id'] ) ? absint( $_GET['payment_id'] ) : 0;
-$payments   = new RCP_Payments;
-$payment    = $payments->get_payment( $payment_id );
+$payment    = new RCP_Payment( $payment_id );
 $user       = get_userdata( $payment->user_id );
 ?>
 <h1>
@@ -40,6 +39,15 @@ $user       = get_userdata( $payment->user_id );
 				<td>
 					<input name="amount" id="rcp-amount" pattern="^[+\-]?[0-9]{1,3}(?:,?[0-9]{3})*(\.[0-9]{2})?$" title="<?php _e( 'Please enter a payment amount in the format of 1.99', 'rcp' ); ?>" min="0.00"  value="<?php echo esc_attr( $payment->amount ); ?>"/>
 					<p class="description"><?php _e( 'The amount of this payment', 'rcp' ); ?></p>
+				</td>
+			</tr>
+			<tr valign="top">
+				<th scope="row" valign="top">
+					<label for="rcp-discount-code"><?php _e( 'Discount Code', 'rcp' ); ?></label>
+				</th>
+				<td>
+					<?php echo $payment->discount_code ? esc_html( $payment->discount_code ) : __( 'None', 'rcp' ); ?>
+					<p class="description"><?php _e( 'Discount code used when making this payment', 'rcp' ); ?></p>
 				</td>
 			</tr>
 			<tr valign="top">

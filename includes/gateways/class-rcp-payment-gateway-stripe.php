@@ -499,6 +499,11 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 								$payment_data['amount']         = $invoice->amount_due / rcp_stripe_get_currency_multiplier();
 								$payment_data['transaction_id'] = $payment_event->id;
 
+								// @todo Not sure about this because I don't think we can do it with all gateways.
+								if ( ! empty( $payment_event->discount ) ) {
+									$payment_data['discount_code'] = $payment_event->discount->coupon_id;
+								}
+
 							}
 
 						} elseif ( $event->type == 'invoice.payment_succeeded' && empty( $payment_event->charge ) ) {

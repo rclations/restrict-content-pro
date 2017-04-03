@@ -1098,7 +1098,7 @@ function rcp_set_as_member( $user_id, $args = array() ) {
 	$expiration = $args['expiration'];
 	if ( empty( $expiration ) ) {
 		$force_now = $member->is_recurring();
-		$prorated  = $member->get_prorate_credit_amount(); // @todo I actually don't think this will work here..
+		$prorated  = $member->get_prorate_credit_amount();
 
 		if ( ! $force_now && ! empty( $prorated ) ) {
 			$force_now = true;
