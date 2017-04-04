@@ -73,12 +73,12 @@ class RCP_Payments {
 			'subscription_key'  => '',
 			'transaction_id'    => '',
 			'status'            => 'complete',
-		    'gateway'           => '',
-		    'subtotal'          => 0.00, // Base price of the subscription level.
-		    'credits'           => 0.00, // Proration credits.
-		    'fees'              => 0.00, // Fees.
-		    'discount_amount'   => 0.00, // Discount amount from discount code.
-		    'discount_code'     => ''
+			'gateway'           => '',
+			'subtotal'          => 0.00, // Base price of the subscription level.
+			'credits'           => 0.00, // Proration credits.
+			'fees'              => 0.00, // Fees.
+			'discount_amount'   => 0.00, // Discount amount from discount code.
+			'discount_code'     => ''
 		);
 
 		$args = wp_parse_args( $payment_data, $defaults );

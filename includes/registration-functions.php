@@ -203,10 +203,10 @@ function rcp_process_registration() {
 		'amount'            => $amount,
 		'user_id'           => $user_data['id'],
 		'status'            => 'pending',
-	    'subtotal'          => $subscription->price,
-	    'credits'           => $member->get_prorate_credit_amount(),
-	    'fees'              => rcp_get_registration()->get_total_fees() + $member->get_prorate_credit_amount(),
-	    'discount_amount'   => rcp_get_registration()->get_total_discounts(),
+		'subtotal'          => $subscription->price,
+		'credits'           => $member->get_prorate_credit_amount(),
+		'fees'              => rcp_get_registration()->get_total_fees() + $member->get_prorate_credit_amount(),
+		'discount_amount'   => rcp_get_registration()->get_total_discounts(),
 		'discount_code'     => $discount,
 	);
 
