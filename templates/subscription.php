@@ -79,7 +79,7 @@ if( isset( $_GET['profile'] ) && 'cancelled' == $_GET['profile'] ) : ?>
 		<?php foreach( rcp_get_user_payments() as $payment ) : ?>
 			<tr>
 				<td data-th="<?php esc_attr_e( 'Invoice #', 'rcp' ); ?>"><?php echo $payment->id; ?></td>
-				<td data-th="<?php esc_attr_e( 'Subscription', 'rcp' ); ?>"><?php echo $payment->subscription; ?></td>
+				<td data-th="<?php esc_attr_e( 'Subscription', 'rcp' ); ?>"><?php echo is_numeric( $payment->subscription ) ? rcp_get_subscription_name( $payment->subscription ) : $payment->subscription; ?></td>
 				<td data-th="<?php esc_attr_e( 'Amount', 'rcp' ); ?>"><?php echo rcp_currency_filter( $payment->amount ); ?></td>
 				<td data-th="<?php esc_attr_e( 'Payment Status', 'rcp' ); ?>"><?php echo rcp_get_payment_status_label( $payment ); ?></td>
 				<td data-th="<?php esc_attr_e( 'Date', 'rcp' ); ?>"><?php echo date_i18n( get_option( 'date_format' ), strtotime( $payment->date, current_time( 'timestamp' ) ) ); ?></td>

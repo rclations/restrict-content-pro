@@ -67,12 +67,18 @@ class RCP_Payments {
 		$defaults = array(
 			'subscription'      => '',
 			'date'              => date( 'Y-m-d H:i:s', current_time( 'timestamp' ) ),
-			'amount'            => 0.00,
+			'amount'            => 0.00, // Total amount after fees/credits/discounts are added.
 			'user_id'           => 0,
 			'payment_type'      => '',
 			'subscription_key'  => '',
 			'transaction_id'    => '',
-			'status'            => 'complete'
+			'status'            => 'complete',
+		    'gateway'           => '',
+		    'subtotal'          => 0.00, // Base price of the subscription level.
+		    'credits'           => 0.00, // Proration credits.
+		    'fees'              => 0.00, // Fees.
+		    'discount_amount'   => 0.00, // Discount amount from discount code.
+		    'discount_code'     => ''
 		);
 
 		$args = wp_parse_args( $payment_data, $defaults );
@@ -116,7 +122,20 @@ class RCP_Payments {
 			// Remove trialing status, if it exists
 			delete_user_meta( $args['user_id'], 'rcp_is_trialing' );
 
-			do_action( 'rcp_insert_payment', $payment_id, $args, $args['amount'] );
+			if ( 'complete' == $args['status'] ) {
+				/**
+				 * Runs only when a new payment is inserted as "complete". This is to
+				 * ensure backwards compatibility from before payments were inserted
+				 * as "pending" before payment is taken.
+				 *
+				 * @see RCP_Payment::update() - Action is also run here when status is updated to complete.
+				 *
+				 * @param int   $payment_id ID of the payment that was just inserted.
+				 * @param array $args       Array of all payment information.
+				 * @param float $amount     Amount the payment was for.
+				 */
+				do_action( 'rcp_insert_payment', $payment_id, $args, $args['amount'] );
+			}
 
 			return $payment_id;
 

@@ -52,6 +52,33 @@ class RCP_Payment {
 	public $amount;
 
 	/**
+	 * Discounted amount, from the discount code
+	 *
+	 * @var int|float
+	 * @access public
+	 * @since  2.9
+	 */
+	public $discount_amount;
+
+	/**
+	 * Amount of credit applied towards the purchase (proration credits)
+	 *
+	 * @var int|float
+	 * @access public
+	 * @since  2.9
+	 */
+	public $credits;
+
+	/**
+	 * Amount of fees
+	 *
+	 * @var int|float
+	 * @access public
+	 * @since  2.9
+	 */
+	public $fees;
+
+	/**
 	 * ID of the user who made the payment
 	 *
 	 * @var int
@@ -62,8 +89,6 @@ class RCP_Payment {
 
 	/**
 	 * Name of the gateway that was used to make the purchase
-	 *
-	 * @todo   add to DB
 	 *
 	 * @var string
 	 * @access public
@@ -94,7 +119,7 @@ class RCP_Payment {
 	 *
 	 * @var string
 	 * @access public
-	 * @since 2.9
+	 * @since  2.9
 	 */
 	public $discount_code;
 
@@ -176,9 +201,33 @@ class RCP_Payment {
 		$ret = $this->payments_db->update( $this->id, $args );
 
 		if ( array_key_exists( 'status', $args ) && $args['status'] != $this->status ) {
-			// Triggers when the payment status is changed.
+			/**
+			 * Triggers when the payment's status is changed.
+			 *
+			 * @param string      $new_status New status being set.
+			 * @param string      $old_status Previous status before the update.
+			 * @param int         $payment_id ID of the payment.
+			 * @param RCP_Payment $this       Payment object.
+			 *
+			 * @since 2.9
+			 */
 			do_action( 'rcp_update_payment_status', $args['status'], $this->status, $this->id, $this );
 			do_action( 'rcp_update_payment_status_' . $args['status'], $this->status, $this->id, $this );
+
+			if ( 'complete' == $args['status'] ) {
+				/**
+				 * Runs only when a payment is updated to "complete". This is to
+				 * ensure backwards compatibility from before payments were inserted
+				 * as "pending" before payment is taken.
+				 *
+				 * @see RCP_Payments::insert() - Action is also run here.
+				 *
+				 * @param int   $payment_id ID of the payment that was just updated.
+				 * @param array $args       Array of payment information that was just updated.
+				 * @param float $amount     Amount the payment was for.
+				 */
+				do_action( 'rcp_insert_payment', $this->id, $args, $this->amount );
+			}
 		}
 
 		return $ret;

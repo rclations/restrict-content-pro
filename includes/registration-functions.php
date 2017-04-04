@@ -203,7 +203,11 @@ function rcp_process_registration() {
 		'amount'            => $amount,
 		'user_id'           => $user_data['id'],
 		'status'            => 'pending',
-		'discount_code'     => $discount
+	    'subtotal'          => $subscription->price,
+	    'credits'           => $member->get_prorate_credit_amount(),
+	    'fees'              => rcp_get_registration()->get_total_fees() + $member->get_prorate_credit_amount(),
+	    'discount_amount'   => rcp_get_registration()->get_total_discounts(),
+		'discount_code'     => $discount,
 	);
 
 	$rcp_payments = new RCP_Payments();
@@ -960,26 +964,6 @@ add_action( 'rcp_form_processing', 'rcp_set_email_verification_flag', 10, 3 );
  * @return void
  */
 function rcp_remove_subscription_data_on_failure( $gateway ) {
-
-	// Remove free trial flags to allow them to sign up again.
-	if( ! empty( $gateway->user_id ) && $gateway->is_trial() ) {
-		delete_user_meta( $gateway->user_id, 'rcp_has_trialed' );
-		delete_user_meta( $gateway->user_id, 'rcp_is_trialing' );
-	}
-
-	// Remove discount code records.
-	if( ! empty( $gateway->discount_code ) ) {
-		$discounts    = new RCP_Discounts();
-		$discount_obj = $discounts->get_by( 'code', $gateway->discount_code );
-
-		// Decrease usage count.
-		$discounts->decrease_uses( $discount_obj->id );
-
-		// Remove the code from this user's profile.
-		if( ! empty( $gateway->user_id ) ) {
-			$discounts->remove_from_user( $gateway->user_id, $gateway->discount_code );
-		}
-	}
 
 	// Delete the pending payment.
 	if( ! empty( $gateway->user_id ) && ! empty( $gateway->payment ) ) {
