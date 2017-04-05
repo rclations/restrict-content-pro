@@ -21,11 +21,11 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 function rcp_process_edit_member() {
 
 	if ( ! wp_verify_nonce( $_POST['rcp_edit_member_nonce'], 'rcp_edit_member_nonce' ) ) {
-		wp_die( __( 'Nonce verification failed.', 'rcp' ) );
+		wp_die( __( 'Nonce verification failed.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 403 ) );
 	}
 
 	if ( ! current_user_can( 'rcp_manage_members' ) ) {
-		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ) );
+		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 403 ) );
 	}
 
 	$levels        = new RCP_Levels();
@@ -119,15 +119,15 @@ add_action( 'rcp_action_edit-member', 'rcp_process_edit_member' );
 function rcp_process_add_member_subscription() {
 
 	if ( ! wp_verify_nonce( $_POST['rcp_add_member_nonce'], 'rcp_add_member_nonce' ) ) {
-		wp_die( __( 'Nonce verification failed.', 'rcp' ) );
+		wp_die( __( 'Nonce verification failed.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 403 ) );
 	}
 
 	if ( ! current_user_can( 'rcp_manage_members' ) ) {
-		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ) );
+		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 403 ) );
 	}
 
 	if ( empty( $_POST['level'] ) || empty( $_POST['user'] ) ) {
-		wp_die( __( 'Please fill out all fields.', 'rcp' ) );
+		wp_die( __( 'Please fill out all fields.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 400 ) );
 	}
 
 	// Don't add if chosen expiration date is in the past.
@@ -140,7 +140,7 @@ function rcp_process_add_member_subscription() {
 	$user   = get_user_by( 'login', $_POST['user'] );
 
 	if ( ! $user ) {
-		wp_die( __( 'You entered a username that does not exist.', 'rcp' ) );
+		wp_die( __( 'You entered a username that does not exist.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 400 ) );
 	}
 
 	$member       = new RCP_Member( $user->ID );
@@ -149,7 +149,7 @@ function rcp_process_add_member_subscription() {
 	$subscription = $levels->get_level( $level_id );
 
 	if ( ! $subscription ) {
-		wp_die( __( 'Please supply a valid subscription level.', 'rcp' ) );
+		wp_die( __( 'Please supply a valid subscription level.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 400 ) );
 	}
 
 	$member->set_expiration_date( $expiration );
@@ -196,15 +196,15 @@ add_action( 'rcp_action_add-subscription', 'rcp_process_add_member_subscription'
 function rcp_process_bulk_edit_members() {
 
 	if ( ! wp_verify_nonce( $_POST['rcp_bulk_edit_nonce'], 'rcp_bulk_edit_nonce' ) ) {
-		wp_die( __( 'Nonce verification failed.', 'rcp' ) );
+		wp_die( __( 'Nonce verification failed.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 403 ) );
 	}
 
 	if ( ! current_user_can( 'rcp_manage_members' ) ) {
-		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ) );
+		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 403 ) );
 	}
 
 	if ( empty( $_POST['member-ids'] ) ) {
-		wp_die( __( 'Please select at least one member to edit.', 'rcp' ) );
+		wp_die( __( 'Please select at least one member to edit.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 400 ) );
 	}
 
 	$member_ids = array_map( 'absint', $_POST['member-ids'] );
@@ -265,15 +265,15 @@ add_action( 'rcp_action_bulk_edit_members', 'rcp_process_bulk_edit_members' );
 function rcp_process_cancel_member() {
 
 	if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'rcp-cancel-nonce' ) ) {
-		wp_die( __( 'Nonce verification failed.', 'rcp' ) );
+		wp_die( __( 'Nonce verification failed.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 403 ) );
 	}
 
 	if ( ! current_user_can( 'rcp_manage_members' ) ) {
-		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ) );
+		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 403 ) );
 	}
 
 	if ( ! isset( $_GET['member_id'] ) ) {
-		wp_die( __( 'Please select a member.', 'rcp' ) );
+		wp_die( __( 'Please select a member.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 400 ) );
 	}
 
 	rcp_cancel_member_payment_profile( urldecode( absint( $_GET['member_id'] ) ) );
@@ -292,15 +292,15 @@ add_action( 'rcp_action_cancel_member', 'rcp_process_cancel_member' );
 function rcp_process_resend_verification() {
 
 	if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'rcp-verification-nonce' ) ) {
-		wp_die( __( 'Nonce verification failed.', 'rcp' ) );
+		wp_die( __( 'Nonce verification failed.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 403 ) );
 	}
 
 	if ( ! current_user_can( 'rcp_manage_members' ) ) {
-		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ) );
+		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 403 ) );
 	}
 
 	if ( ! isset( $_GET['member_id'] ) ) {
-		wp_die( __( 'Please select a member.', 'rcp' ) );
+		wp_die( __( 'Please select a member.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 400 ) );
 	}
 
 	rcp_send_email_verification( urldecode( absint( $_GET['member_id'] ) ) );

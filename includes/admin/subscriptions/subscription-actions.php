@@ -21,11 +21,11 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 function rcp_process_add_subscription_level() {
 
 	if ( ! wp_verify_nonce( $_POST['rcp_add_level_nonce'], 'rcp_add_level_nonce' ) ) {
-		wp_die( __( 'Nonce verification failed.', 'rcp' ) );
+		wp_die( __( 'Nonce verification failed.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 403 ) );
 	}
 
 	if ( ! current_user_can( 'rcp_manage_levels' ) ) {
-		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ) );
+		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 403 ) );
 	}
 
 	if ( empty( $_POST['name'] ) ) {
@@ -58,11 +58,11 @@ add_action( 'rcp_action_add-level', 'rcp_process_add_subscription_level' );
 function rcp_process_edit_subscription_level() {
 
 	if ( ! wp_verify_nonce( $_POST['rcp_edit_level_nonce'], 'rcp_edit_level_nonce' ) ) {
-		wp_die( __( 'Nonce verification failed.', 'rcp' ) );
+		wp_die( __( 'Nonce verification failed.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 403 ) );
 	}
 
 	if ( ! current_user_can( 'rcp_manage_levels' ) ) {
-		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ) );
+		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 403 ) );
 	}
 
 	$levels = new RCP_Levels();
@@ -89,15 +89,15 @@ add_action( 'rcp_action_edit-subscription', 'rcp_process_edit_subscription_level
 function rcp_process_delete_subscription_level() {
 
 	if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'rcp-delete-subscription-level' ) ) {
-		wp_die( __( 'Nonce verification failed.', 'rcp' ) );
+		wp_die( __( 'Nonce verification failed.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 403 ) );
 	}
 
 	if ( ! current_user_can( 'rcp_manage_levels' ) ) {
-		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ) );
+		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 403 ) );
 	}
 
 	if ( ! isset( $_GET['level_id'] ) ) {
-		wp_die( __( 'Please choose a subscription level.', 'rcp' ) );
+		wp_die( __( 'Please choose a subscription level.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 400 ) );
 	}
 
 	$level_id = absint( $_GET['level_id'] );
@@ -127,15 +127,15 @@ add_action( 'rcp_action_delete_subscription', 'rcp_process_delete_subscription_l
 function rcp_process_activate_subscription() {
 
 	if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'rcp-activate-subscription-level' ) ) {
-		wp_die( __( 'Nonce verification failed.', 'rcp' ) );
+		wp_die( __( 'Nonce verification failed.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 403 ) );
 	}
 
 	if ( ! current_user_can( 'rcp_manage_levels' ) ) {
-		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ) );
+		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 403 ) );
 	}
 
 	if ( ! isset( $_GET['level_id'] ) ) {
-		wp_die( __( 'Please choose a subscription level.', 'rcp' ) );
+		wp_die( __( 'Please choose a subscription level.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 400 ) );
 	}
 
 	$level_id = absint( $_GET['level_id'] );
@@ -155,15 +155,15 @@ add_action( 'rcp_action_activate_subscription', 'rcp_process_activate_subscripti
 function rcp_process_deactivate_subscription() {
 
 	if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'rcp-deactivate-subscription-level' ) ) {
-		wp_die( __( 'Nonce verification failed.', 'rcp' ) );
+		wp_die( __( 'Nonce verification failed.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 403 ) );
 	}
 
 	if ( ! current_user_can( 'rcp_manage_levels' ) ) {
-		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ) );
+		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 403 ) );
 	}
 
 	if ( ! isset( $_GET['level_id'] ) ) {
-		wp_die( __( 'Please choose a subscription level.', 'rcp' ) );
+		wp_die( __( 'Please choose a subscription level.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 400 ) );
 	}
 
 	$level_id = absint( $_GET['level_id'] );

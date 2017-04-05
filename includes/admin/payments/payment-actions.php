@@ -21,11 +21,11 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 function rcp_process_add_payment() {
 
 	if ( ! wp_verify_nonce( $_POST['rcp_add_payment_nonce'], 'rcp_add_payment_nonce' ) ) {
-		wp_die( __( 'Nonce verification failed.', 'rcp' ) );
+		wp_die( __( 'Nonce verification failed.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 403 ) );
 	}
 
 	if ( ! current_user_can( 'rcp_manage_payments' ) ) {
-		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ) );
+		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 403 ) );
 	}
 
 	$payments = new RCP_Payments();
@@ -73,11 +73,11 @@ add_action( 'rcp_action_add-payment', 'rcp_process_add_payment' );
 function rcp_process_edit_payment() {
 
 	if ( ! wp_verify_nonce( $_POST['rcp_edit_payment_nonce'], 'rcp_edit_payment_nonce' ) ) {
-		wp_die( __( 'Nonce verification failed.', 'rcp' ) );
+		wp_die( __( 'Nonce verification failed.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 403 ) );
 	}
 
 	if ( ! current_user_can( 'rcp_manage_payments' ) ) {
-		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ) );
+		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 403 ) );
 	}
 
 	$payments   = new RCP_Payments();
@@ -125,11 +125,11 @@ add_action( 'rcp_action_edit-payment', 'rcp_process_edit_payment' );
 function rcp_process_delete_payment() {
 
 	if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'rcp_delete_payment_nonce' ) ) {
-		wp_die( __( 'Nonce verification failed.', 'rcp' ) );
+		wp_die( __( 'Nonce verification failed.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 403 ) );
 	}
 
 	if ( ! current_user_can( 'rcp_manage_payments' ) ) {
-		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ) );
+		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 403 ) );
 	}
 
 	$payments = new RCP_Payments();
