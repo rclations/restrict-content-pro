@@ -115,6 +115,9 @@ function rcp_process_delete_subscription_level() {
 	$levels->remove( $level_id );
 	$levels->remove_all_meta_for_level_id( $level_id );
 
+	wp_safe_redirect( add_query_arg( 'rcp_message', 'level_deleted', 'admin.php?page=rcp-member-levels' ) );
+	exit;
+
 }
 add_action( 'rcp_action_delete_subscription', 'rcp_process_delete_subscription_level' );
 
@@ -143,6 +146,9 @@ function rcp_process_activate_subscription() {
 	$update   = $levels->update( $level_id, array( 'status' => 'active' ) );
 	delete_transient( 'rcp_subscription_levels' );
 
+	wp_safe_redirect( add_query_arg( 'rcp_message', 'level_activated', 'admin.php?page=rcp-member-levels' ) );
+	exit;
+
 }
 add_action( 'rcp_action_activate_subscription', 'rcp_process_activate_subscription' );
 
@@ -170,6 +176,9 @@ function rcp_process_deactivate_subscription() {
 	$levels   = new RCP_Levels();
 	$update   = $levels->update( $level_id, array( 'status' => 'inactive' ) );
 	delete_transient( 'rcp_subscription_levels' );
+
+	wp_safe_redirect( add_query_arg( 'rcp_message', 'level_deactivated', 'admin.php?page=rcp-member-levels' ) );
+	exit;
 
 }
 add_action( 'rcp_action_deactivate_subscription', 'rcp_process_deactivate_subscription' );

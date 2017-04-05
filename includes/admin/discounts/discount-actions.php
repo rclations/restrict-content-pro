@@ -134,6 +134,9 @@ function rcp_process_delete_discount() {
 	$discounts   = new RCP_Discounts();
 	$discounts->delete( $discount_id );
 
+	wp_safe_redirect( add_query_arg( 'rcp_message', 'discount_deleted', 'admin.php?page=rcp-discounts' ) );
+	exit;
+
 }
 add_action( 'rcp_action_delete_discount_code', 'rcp_process_delete_discount' );
 
@@ -160,6 +163,9 @@ function rcp_process_activate_discount() {
 	$discounts = new RCP_Discounts();
 	$discounts->update( absint( $_GET['discount_id'] ), array( 'status' => 'active' ) );
 
+	wp_safe_redirect( add_query_arg( 'rcp_message', 'discount_activated', 'admin.php?page=rcp-discounts' ) );
+	exit;
+
 }
 add_action( 'rcp_action_activate_discount', 'rcp_process_activate_discount' );
 
@@ -185,6 +191,9 @@ function rcp_process_deactivate_discount() {
 
 	$discounts = new RCP_Discounts();
 	$discounts->update( absint( $_GET['discount_id'] ), array( 'status' => 'disabled' ) );
+
+	wp_safe_redirect( add_query_arg( 'rcp_message', 'discount_deactivated', 'admin.php?page=rcp-discounts' ) );
+	exit;
 
 }
 add_action( 'rcp_action_deactivate_discount', 'rcp_process_deactivate_discount' );
