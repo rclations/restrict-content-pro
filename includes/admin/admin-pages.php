@@ -35,9 +35,11 @@ function rcp_settings_menu() {
 
 	// Add "Restrict" submenu under each post type.
 	foreach ( rcp_get_metabox_post_types() as $post_type ) {
-		$url  = ( 'post' == $post_type ) ? 'edit.php' : 'edit.php?post_type=' . $post_type;
-		$slug = ( 'post' == $post_type ) ? 'rcp-restrict' : 'rcp-restrict-' . $post_type;
-		add_submenu_page( $url, __( 'Restrict', 'rcp' ), __( 'Restrict', 'rcp' ), 'edit_posts', $slug, 'rcp_restrict_post_type' );
+		$post_type_details = get_post_type_object( $post_type );
+		$url               = ( 'post' == $post_type ) ? 'edit.php' : 'edit.php?post_type=' . $post_type;
+		$slug              = ( 'post' == $post_type ) ? 'rcp-restrict' : 'rcp-restrict-' . $post_type;
+		$capability        = isset( $post_type_details->cap->edit_posts ) ? $post_type_details->cap->edit_posts : 'edit_posts';
+		add_submenu_page( $url, __( 'Restrict Access', 'rcp' ), __( 'Restrict Access', 'rcp' ), $capability, $slug, 'rcp_restrict_post_type' );
 	}
 
 	if ( get_bloginfo('version') >= 3.3 ) {
