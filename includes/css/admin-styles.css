@@ -136,6 +136,17 @@
 	text-align: center;
 }
 
+.rcp-delete {
+	color: red;
+}
+
+/* Reminder Emails
+-------------------------------------------------------------- */
+.rcp-email-reminders th {
+	font-size: 14px;
+	padding-left: 10px !important;
+}
+
 /* Restrict This Content Metabox
 -------------------------------------------------------------- */
 
