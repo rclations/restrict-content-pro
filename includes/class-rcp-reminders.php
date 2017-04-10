@@ -23,13 +23,13 @@ class RCP_Reminders {
 	}
 
 	/**
-	 * Checks if reminders are enabled
+	 * Returns an array of reminder types and whether or not they're enabled
 	 *
 	 * @access public
 	 * @since  2.9
 	 * @return array Array of all notice types and whether or not they're enabled (true or false).
 	 */
-	public function reminders_enabled() {
+	public function get_enabled_reminders() {
 
 		global $rcp_options;
 		$types = $this->get_notice_types();
@@ -228,11 +228,11 @@ class RCP_Reminders {
 	 * @since  2.9
 	 * @return void
 	 */
-	public function scheduled_reminders() {
+	public function send_reminders() {
 
 		$rcp_email = new RCP_Emails;
 
-		$reminders_enabled = $this->reminders_enabled();
+		$reminders_enabled = $this->get_enabled_reminders();
 
 		foreach ( $reminders_enabled as $type => $enabled ) {
 
@@ -260,7 +260,7 @@ class RCP_Reminders {
 					$member = new RCP_Member( $user );
 
 					// Ensure an expiration notice isn't sent to an auto-renew subscription
-					if ( $type == 'expiration' && $member->is_recurring() ) {
+					if ( $type == 'expiration' && $member->is_recurring() && $member->is_active() ) {
 						continue;
 					}
 
@@ -331,8 +331,8 @@ class RCP_Reminders {
 				$args['meta_query'][] = array(
 					'key'     => 'rcp_expiration',
 					'value'   => array(
-						date( 'Y-m-d H:i:s', strtotime( $period . ' midnight' ) ),
-						date( 'Y-m-d H:i:s', strtotime( $period . ' midnight' ) + ( DAY_IN_SECONDS - 1 ) )
+						date( 'Y-m-d H:i:s', strtotime( $period . ' midnight', current_time( 'timestamp' ) ) ),
+						date( 'Y-m-d H:i:s', strtotime( $period . ' midnight', current_time( 'timestamp' ) ) + ( DAY_IN_SECONDS - 1 ) )
 					),
 					'type'    => 'DATETIME',
 					'compare' => 'between'
@@ -354,8 +354,8 @@ class RCP_Reminders {
 				$args['meta_query'][] = array(
 					'key'     => 'rcp_expiration',
 					'value'   => array(
-						date( 'Y-m-d H:i:s', strtotime( $period . ' midnight' ) ),
-						date( 'Y-m-d H:i:s', strtotime( $period . ' midnight' ) + ( DAY_IN_SECONDS - 1 ) )
+						date( 'Y-m-d H:i:s', strtotime( $period . ' midnight', current_time( 'timestamp' ) ) ),
+						date( 'Y-m-d H:i:s', strtotime( $period . ' midnight', current_time( 'timestamp' ) ) + ( DAY_IN_SECONDS - 1 ) )
 					),
 					'type'    => 'DATETIME',
 					'compare' => 'between'

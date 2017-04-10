@@ -101,7 +101,7 @@ add_action( 'rcp_expired_users_check', 'rcp_check_for_expired_users' );
 function rcp_check_for_soon_to_expire_users() {
 
 	$reminders = new RCP_Reminders();
-	$reminders->scheduled_reminders();
+	$reminders->send_reminders();
 
 }
 add_action( 'rcp_send_expiring_soon_notice', 'rcp_check_for_soon_to_expire_users' );
