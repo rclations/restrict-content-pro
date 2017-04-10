@@ -9,7 +9,7 @@
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
  * @since       2.9
  */
-class RCP_Reminders {
+final class RCP_Reminders {
 
 	/**
 	 * Get things started
@@ -57,8 +57,12 @@ class RCP_Reminders {
 			'+1day'    => __( 'One day before renewal/expiration', 'rcp' ),
 			'+2days'   => __( 'Two days before renewal/expiration', 'rcp' ),
 			'+3days'   => __( 'Three days before renewal/expiration', 'rcp' ),
+			'+4days'   => __( 'Four days before renewal/expiration', 'rcp' ),
+			'+5days'   => __( 'Five days before renewal/expiration', 'rcp' ),
+			'+6days'   => __( 'Six days before renewal/expiration', 'rcp' ),
 			'+1week'   => __( 'One week before renewal/expiration', 'rcp' ),
 			'+2weeks'  => __( 'Two weeks before renewal/expiration', 'rcp' ),
+			'+3weeks'  => __( 'Three weeks before renewal/expiration', 'rcp' ),
 			'+1month'  => __( 'One month before renewal/expiration', 'rcp' ),
 			'+2months' => __( 'Two months before renewal/expiration', 'rcp' ),
 			'+3months' => __( 'Three months before renewal/expiration', 'rcp' ),

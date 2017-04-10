@@ -98,7 +98,7 @@ function rcp_process_add_edit_reminder_notice() {
 		wp_die( __( 'Nonce verification failed', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 403 ) );
 	}
 
-	$notice_id = absint( $_POST['notice-id'] ); // Add a new notice if 0.
+	$notice_id = $_POST['notice-id']; // We're adding a new notice if this is an empty string.
 	$subject   = isset( $_POST['subject'] ) ? sanitize_text_field( $_POST['subject'] ) : __( 'Your Subscription is About to Renew', 'rcp' );
 	$period    = isset( $_POST['period'] ) ? sanitize_text_field( $_POST['period'] ) : '+1month';
 	$message   = isset( $_POST['message'] ) ? wp_kses( stripslashes( $_POST['message'] ), wp_kses_allowed_html( 'post' ) ) : false;
@@ -119,12 +119,12 @@ Your subscription for %subscription_name% will renew on %expiration%.';
 		'type'        => $type
 	);
 
-	if ( $notice_id ) {
-		$notices[ $notice_id ] = $settings;
-		$redirect_url          = admin_url( 'admin.php?page=rcp-settings&rcp_message=reminder_added#emails' );
+	if ( '' != $notice_id ) {
+		$notices[ absint( $notice_id ) ] = $settings;
+		$redirect_url          = admin_url( 'admin.php?page=rcp-settings&rcp_message=reminder_updated#emails' );
 	} else {
 		$notices[]    = $settings;
-		$redirect_url = admin_url( 'admin.php?page=rcp-settings&rcp_message=reminder_created#emails' );
+		$redirect_url = admin_url( 'admin.php?page=rcp-settings&rcp_message=reminder_added#emails' );
 	}
 
 	update_option( 'rcp_reminder_notices', $notices );

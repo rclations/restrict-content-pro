@@ -12,8 +12,9 @@
 $reminder_type = isset( $_GET['rcp_reminder_type'] ) ? $_GET['rcp_reminder_type'] : 'renewal';
 $notices       = new RCP_Reminders();
 $notice_id     = isset( $_GET['notice'] ) ? absint( $_GET['notice'] ) : 0;
+$new_notice    = ! isset( $_GET['notice'] );
 $default       = array( 'type' => $reminder_type, 'subject' => '', 'send_period' => 'today', 'message' => '' );
-$notice        = ! empty( $notice_id ) ? $notices->get_notice( $notice_id ) : $default;
+$notice        = ! $new_notice ? $notices->get_notice( $notice_id ) : $default;
 ?>
 <div class="wrap">
 	<h1>
@@ -76,7 +77,7 @@ $notice        = ! empty( $notice_id ) ? $notices->get_notice( $notice_id ) : $d
 		</table>
 		<p class="submit">
 			<input type="hidden" name="rcp-action" value="add_edit_reminder_notice"/>
-			<input type="hidden" name="notice-id" value="<?php echo esc_attr( $notice_id ); ?>"/>
+			<input type="hidden" name="notice-id" value="<?php echo ! $new_notice ? esc_attr( $notice_id ) : ''; ?>"/>
 			<?php wp_nonce_field( 'rcp_add_edit_reminder', 'rcp_add_edit_reminder_nonce' ); ?>
 			<input type="submit" value="<?php echo $notice_id ? esc_attr__( 'Edit Reminder Notice', 'rcp' ) : esc_attr__( 'Add Reminder Notice', 'rcp' ); ?>" class="button-primary"/>
 		</p>
