@@ -39,7 +39,9 @@ final class RCP_Reminders {
 			$ret[ $type ] = isset( $rcp_options[ 'send_' . $type . '_reminders' ] );
 		}
 
-		return apply_filters( 'rcp_send_reminders', $ret );
+		return $ret;
+
+		//return apply_filters( 'rcp_send_reminders', $ret );
 
 	}
 
@@ -95,7 +97,9 @@ final class RCP_Reminders {
 		$periods = $this->get_notice_periods();
 		$label   = $periods[ $notice['send_period'] ];
 
-		return apply_filters( 'rcp_reminder_notice_period_label', $label, $notice_id );
+		return $label;
+
+		//return apply_filters( 'rcp_reminder_notice_period_label', $label, $notice_id );
 
 	}
 
@@ -113,7 +117,9 @@ final class RCP_Reminders {
 			'expiration' => __( 'Expiration', 'rcp' ),
 		);
 
-		return apply_filters( 'rcp_reminder_notice_types', $types );
+		return $types;
+
+		//return apply_filters( 'rcp_reminder_notice_types', $types );
 
 	}
 
@@ -132,7 +138,9 @@ final class RCP_Reminders {
 		$types  = $this->get_notice_types();
 		$label  = $types[ $notice['type'] ];
 
-		return apply_filters( 'rcp_reminder_notice_type_label', $label, $notice_id );
+		return $label;
+
+		//return apply_filters( 'rcp_reminder_notice_type_label', $label, $notice_id );
 
 	}
 
@@ -162,7 +170,9 @@ final class RCP_Reminders {
 
 		$notice = wp_parse_args( $notice, $defaults );
 
-		return apply_filters( 'rcp_reminder_notice', $notice, $notice_id );
+		return $notice;
+
+		//return apply_filters( 'rcp_reminder_notice', $notice, $notice_id );
 
 	}
 
@@ -220,13 +230,13 @@ final class RCP_Reminders {
 
 		}
 
-		return apply_filters( 'rcp_reminder_notices', $notices, $type );
+		return $notices;
+
+		//return apply_filters( 'rcp_reminder_notices', $notices, $type );
 	}
 
 	/**
 	 * Send reminder emails
-	 *
-	 * @todo   Test this
 	 *
 	 * @access public
 	 * @since  2.9
