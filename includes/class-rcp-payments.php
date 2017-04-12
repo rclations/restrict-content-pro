@@ -147,8 +147,8 @@ class RCP_Payments {
 		do_action( 'rcp_update_payment', $payment_id, $payment_data );
 
 		if ( array_key_exists( 'status', $payment_data ) ) {
-			delete_transient( md5( 'rcp_payments_count_' . serialize( array( 'user_id' => 0, 'status' => '' ) ) ) );
-			delete_transient( md5( 'rcp_payments_count_' . serialize( array( 'user_id' => 0, 'status' => $payment_data['status'] ) ) ) );
+			delete_transient( md5( 'rcp_payments_count_' . serialize( array( 'user_id' => 0, 'status' => '', 's' => '' ) ) ) );
+			delete_transient( md5( 'rcp_payments_count_' . serialize( array( 'user_id' => 0, 'status' => $payment_data['status'], 's' => '' ) ) ) );
 		}
 
 		return $wpdb->update( $this->db_name, $payment_data, array( 'id' => $payment_id ) );

@@ -16,7 +16,7 @@
 function rcp_member_levels_page() {
 	global $rcp_options, $rcp_db_name, $wpdb, $rcp_levels_db;
 	$page   = admin_url( '/admin.php?page=rcp-member-levels' );
-	$status = isset( $_GET['status'] ) ? $_GET['status'] : 'all';
+	$status = isset( $_GET['status'] ) ? sanitize_text_field( $_GET['status'] ) : 'all';
 
 	// Query counts.
 	$all_count      = $rcp_levels_db->count();

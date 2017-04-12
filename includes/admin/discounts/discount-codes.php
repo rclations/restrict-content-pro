@@ -19,7 +19,7 @@ function rcp_discounts_page() {
 	 */
 	global $rcp_discounts_db;
 	$page   = admin_url( '/admin.php?page=rcp-discounts' );
-	$status = isset( $_GET['status'] ) ? $_GET['status'] : 'all';
+	$status = isset( $_GET['status'] ) ? sanitize_text_field( $_GET['status'] ) : 'all';
 
 	// Query counts.
 	$all_count      = $rcp_discounts_db->count();
