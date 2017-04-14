@@ -418,6 +418,6 @@ add_action( 'rcp_ipn_duplicate_payment', 'rcp_log_duplicate_ipn_payment', 10, 3 
  * @return void
  */
 function rcp_log_gateway_payment_processed( $member, $payment_id, $gateway ) {
-	rcp_log( sprintf( 'New payment #%d inserted for member #%d via gateway %s.', $payment_id, $member->ID, rcp_get_gateway_name_from_object( $gateway ) ) );
+	rcp_log( sprintf( 'New payment #%d inserted for member #%d via %s gateway.', $payment_id, $member->ID, rcp_get_gateway_name_from_object( $gateway ) ) );
 }
 add_action( 'rcp_gateway_payment_processed', 'rcp_log_gateway_payment_processed', 10, 3 );
