@@ -95,7 +95,7 @@ class RCP_Payments {
 			// Remove trialing status, if it exists
 			delete_user_meta( $args['user_id'], 'rcp_is_trialing' );
 
-			rcp_log( sprintf( 'New payment inserted. ID: %d; User ID: %d; Amount: %s; Subscription: %s; Status: %s', $payment_id, $args['user_id'], $args['amount'], $args['subscription'], $args['status'] ) );
+			rcp_log( sprintf( 'New payment inserted. ID: %d; User ID: %d; Amount: %.2f; Subscription: %s; Status: %s', $payment_id, $args['user_id'], $args['amount'], $args['subscription'], $args['status'] ) );
 
 			do_action( 'rcp_insert_payment', $payment_id, $args, $args['amount'] );
 
