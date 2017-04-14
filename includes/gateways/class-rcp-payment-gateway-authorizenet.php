@@ -227,13 +227,25 @@ class RCP_Payment_Gateway_Authorizenet extends RCP_Payment_Gateway {
 					'transaction_id'   => $transaction_id
 				);
 
+				$payment_id = $payments->insert( $payment_data );
+
 				if ( intval( $_POST['x_subscription_paynum'] ) > 1 ) {
+
+					// Renewal payment.
 					$member->renew( $member->is_recurring() );
+					do_action( 'rcp_webhook_recurring_payment_processed', $member, $payment_id, $this );
+
+				} elseif ( $member->is_recurring() ) {
+
+					// Recurring profile first created.
+					do_action( 'rcp_webhook_recurring_payment_profile_created', $member, $this );
+
 				}
-				$payments->insert( $payment_data );
+
 				$member->add_note( __( 'Subscription processed in Authorize.net', 'rcp' ) );
 
 				do_action( 'rcp_authorizenet_silent_post_payment', $member, $this );
+				do_action( 'rcp_gateway_payment_processed', $member, $payment_id, $this );
 
 			} elseif ( 2 == $response_code ) {
 

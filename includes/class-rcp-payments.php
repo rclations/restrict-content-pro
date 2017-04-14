@@ -95,6 +95,8 @@ class RCP_Payments {
 			// Remove trialing status, if it exists
 			delete_user_meta( $args['user_id'], 'rcp_is_trialing' );
 
+			rcp_log( sprintf( 'New payment inserted. ID: %d; User ID: %d; Amount: %s; Subscription: %s; Status: %s', $payment_id, $args['user_id'], $args['amount'], $args['subscription'], $args['status'] ) );
+
 			do_action( 'rcp_insert_payment', $payment_id, $args, $args['amount'] );
 
 			return $payment_id;
@@ -144,7 +146,11 @@ class RCP_Payments {
 	public function update( $payment_id = 0, $payment_data = array() ) {
 
 		global $wpdb;
+
 		do_action( 'rcp_update_payment', $payment_id, $payment_data );
+
+		rcp_log( sprintf( 'Updating payment #%d with new data: %s', $payment_id, var_export( $payment_data, true ) ) );
+
 		return $wpdb->update( $this->db_name, $payment_data, array( 'id' => $payment_id ) );
 	}
 
@@ -159,8 +165,13 @@ class RCP_Payments {
 	 * @return  void
 	*/
 	public function delete( $payment_id = 0 ) {
+
 		global $wpdb;
+
 		do_action( 'rcp_delete_payment', $payment_id );
+
+		rcp_log( sprintf( 'Deleted payment #%d.', $payment_id ) );
+
 		$remove = $wpdb->query( $wpdb->prepare( "DELETE FROM {$this->db_name} WHERE `id` = '%d';", absint( $payment_id ) ) );
 
 	}

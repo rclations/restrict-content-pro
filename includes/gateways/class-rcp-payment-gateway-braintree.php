@@ -366,10 +366,12 @@ class RCP_Payment_Gateway_Braintree extends RCP_Payment_Gateway {
 				'transaction_id'   => $result->transaction->id
 			);
 			$rcp_payments = new RCP_Payments;
-			$rcp_payments->insert( $payment_data );
+			$payment_id   = $rcp_payments->insert( $payment_data );
 
 			// Update the member
 			$member->renew( false, 'active', $member->calculate_expiration() );
+
+			do_action( 'rcp_gateway_payment_processed', $member, $payment_id, $this );
 
 		}
 
@@ -506,6 +508,8 @@ class RCP_Payment_Gateway_Braintree extends RCP_Payment_Gateway {
 
 				$member->add_note( __( 'Subscription cancelled in Braintree', 'rcp' ) );
 
+				do_action( 'rcp_webhook_cancel', $member, $this );
+
 				die( 'braintree subscription cancelled' );
 
 				break;
@@ -537,6 +541,9 @@ class RCP_Payment_Gateway_Braintree extends RCP_Payment_Gateway {
 				) );
 
 				$member->add_note( sprintf( __( 'Payment %s collected in Braintree', 'rcp' ), $payment_id ) );
+
+				do_action( 'rcp_webhook_recurring_payment_processed', $member, $payment_id, $this );
+				do_action( 'rcp_gateway_payment_processed', $member, $payment_id, $this );
 
 				die( 'braintree payment recorded' );
 				break;
@@ -595,6 +602,8 @@ class RCP_Payment_Gateway_Braintree extends RCP_Payment_Gateway {
 
 					$member->add_note( sprintf( __( 'Subscription %s started in Braintree', 'rcp' ), $payment_id ) );
 				}
+
+				do_action( 'rcp_webhook_recurring_payment_profile_created', $member, $this );
 
 				die( 'subscription went active' );
 				break;

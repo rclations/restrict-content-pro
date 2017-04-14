@@ -284,8 +284,8 @@ if( version_compare( PHP_VERSION, '5.3', '<' ) ) {
 	include( RCP_PLUGIN_DIR . 'includes/template-functions.php' );
 
 	// @todo remove
-	if( !class_exists( 'WP_Logging' ) ) {
-		include( RCP_PLUGIN_DIR . 'includes/libraries/class-wp-logging.php' );
+	if( ! class_exists( 'WP_Logging' ) ) {
+		include( RCP_PLUGIN_DIR . 'includes/deprecated/class-wp-logging.php' );
 	}
 
 	// admin only includes
@@ -305,7 +305,6 @@ if( version_compare( PHP_VERSION, '5.3', '<' ) ) {
 		include( RCP_PLUGIN_DIR . 'includes/admin/payments/payments-page.php' );
 		include( RCP_PLUGIN_DIR . 'includes/admin/reports/reports-page.php' );
 		include( RCP_PLUGIN_DIR . 'includes/admin/export.php' );
-		include( RCP_PLUGIN_DIR . 'includes/admin/logs.php' );
 		include( RCP_PLUGIN_DIR . 'includes/admin/tools/tools-page.php' );
 		include( RCP_PLUGIN_DIR . 'includes/admin/help/help-menus.php' );
 		include( RCP_PLUGIN_DIR . 'includes/admin/metabox.php' );

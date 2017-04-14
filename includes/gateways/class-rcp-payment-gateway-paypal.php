@@ -257,6 +257,7 @@ class RCP_Payment_Gateway_PayPal extends RCP_Payment_Gateway {
 			$member = new RCP_Member( $user_id );
 
 			if( ! $member || ! $member->ID > 0 ) {
+				rcp_log( sprintf( 'PayPal IPN Failed: unable to find associated member in RCP. Item Name: %s; Item Number: %d; TXN Type: %s; TXN ID: %s', $posted['item_name'], $posted['item_number'], $posted['txn_type'], $posted['txn_id'] ) );
 				die( 'no member found' );
 			}
 
@@ -369,6 +370,7 @@ class RCP_Payment_Gateway_PayPal extends RCP_Payment_Gateway {
 					}
 
 					do_action( 'rcp_ipn_subscr_signup', $user_id );
+					do_action( 'rcp_webhook_recurring_payment_profile_created', $member, $this );
 
 
 					die( 'successful subscr_signup' );
@@ -386,10 +388,11 @@ class RCP_Payment_Gateway_PayPal extends RCP_Payment_Gateway {
 					$member->renew( true );
 
 					// record this payment in the database
-					$rcp_payments->insert( $payment_data );
+					$payment_id = $rcp_payments->insert( $payment_data );
 
 					do_action( 'rcp_ipn_subscr_payment', $user_id );
-
+					do_action( 'rcp_webhook_recurring_payment_processed', $member, $payment_id, $this );
+					do_action( 'rcp_gateway_payment_processed', $member, $payment_id, $this );
 
 					die( 'successful subscr_payment' );
 
@@ -406,6 +409,7 @@ class RCP_Payment_Gateway_PayPal extends RCP_Payment_Gateway {
 						delete_user_meta( $user_id, 'rcp_paypal_subscriber' );
 
 						do_action( 'rcp_ipn_subscr_cancel', $user_id );
+						do_action( 'rcp_webhook_cancel', $member, $this );
 
 						die( 'successful subscr_cancel' );
 
@@ -466,7 +470,9 @@ class RCP_Payment_Gateway_PayPal extends RCP_Payment_Gateway {
 							// set this user to active
 							$member->renew();
 
-							$rcp_payments->insert( $payment_data );
+							$payment_id = $rcp_payments->insert( $payment_data );
+
+							do_action( 'rcp_gateway_payment_processed', $member, $payment_id, $this );
 
 							break;
 
@@ -493,6 +499,8 @@ class RCP_Payment_Gateway_PayPal extends RCP_Payment_Gateway {
 			endswitch;
 
 		} else {
+
+			rcp_log( 'Invalid PayPal IPN attempt.' );
 
 			if( isset( $rcp_options['email_ipn_reports'] ) ) {
 				// an invalid IPN attempt was made. Send an email to the admin account to investigate

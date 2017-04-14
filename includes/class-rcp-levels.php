@@ -240,11 +240,15 @@ class RCP_Levels {
 
 		// Validate price value
 		if ( false === $this->valid_amount( $args['price'] ) || $args['price'] < 0 ) {
+			rcp_log( sprintf( 'Failed inserting subscription level: invalid price ( %s ).', $args['price'] ) );
+
 			return false;
 		}
 
 		// Validate fee value
 		if ( false === $this->valid_amount( $args['fee'] ) ) {
+			rcp_log( sprintf( 'Failed inserting subscription level: invalid fee ( %s ).', $args['fee'] ) );
+
 			return false;
 		}
 
@@ -254,6 +258,8 @@ class RCP_Levels {
 		 */
 		if ( $args['trial_duration'] > 0 ) {
 			if ( $args['price'] <= 0 || $args['duration'] <= 0 ) {
+				rcp_log( sprintf( 'Failed inserting subscription level: invalid settings for free trial. Price: %f; Duration: %d', $args['price'], $args['duration'] ) );
+
 				return false;
 			}
 		}
@@ -304,6 +310,8 @@ class RCP_Levels {
 
 			do_action( 'rcp_add_subscription', $level_id, $args );
 
+			rcp_log( sprintf( 'Successfully added new subscription level #%d. Args: %s', $level_id, var_export( $args, true ) ) );
+
 			return $level_id;
 		}
 
@@ -342,11 +350,15 @@ class RCP_Levels {
 
 		// Validate price value
 		if ( false === $this->valid_amount( $args['price'] ) || $args['price'] < 0 ) {
+			rcp_log( sprintf( 'Failed updating subscription level #%d: invalid price ( %s ).', $level_id, $args['price'] ) );
+
 			return false;
 		}
 
 		// Validate fee value
 		if ( false === $this->valid_amount( $args['fee'] ) ) {
+			rcp_log( sprintf( 'Failed updating subscription level #%d: invalid fee ( %s ).', $level_id, $args['fee'] ) );
+
 			return false;
 		}
 
@@ -356,6 +368,8 @@ class RCP_Levels {
 		 */
 		if ( $args['trial_duration'] > 0 ) {
 			if ( $args['price'] <= 0 || $args['duration'] <= 0 ) {
+				rcp_log( sprintf( 'Failed updating subscription level #%d: invalid settings for free trial. Price: %f; Duration: %d', $level_id, $args['price'], $args['duration'] ) );
+
 				return false;
 			}
 		}
@@ -404,6 +418,8 @@ class RCP_Levels {
 
 		do_action( 'rcp_edit_subscription_level', absint( $args['id'] ), $args );
 
+		rcp_log( sprintf( 'Successfully updated subscription level #%d. Args: %s', absint( $level_id ), var_export( $args, true ) ) );
+
 		if( $update !== false )
 			return true;
 		return false;
@@ -437,6 +453,8 @@ class RCP_Levels {
 		wp_cache_delete( $cache_key, 'rcp' );
 
 		do_action( 'rcp_remove_level', absint( $level_id ) );
+
+		rcp_log( sprintf( 'Deleted subscription ID #%d.', $level_id ) );
 
 	}
 

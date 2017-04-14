@@ -968,14 +968,15 @@ add_action( 'edited_term', 'rcp_delete_transient_post_ids_assigned_to_restricted
  * Log a message to the debug file if debug mode is enabled.
  *
  * @param string $message Message to log.
+ * @param bool   $force   Whether to force log a message, even if debugging is disabled.
  *
  * @since 2.9
  * @return void
  */
-function rcp_log( $message = '' ) {
+function rcp_log( $message = '', $force = false ) {
 	global $rcp_options;
 
-	if ( empty( $rcp_options['debug_mode'] ) ) {
+	if ( empty( $rcp_options['debug_mode'] ) && ! $force ) {
 		return;
 	}
 

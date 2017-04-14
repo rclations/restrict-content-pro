@@ -312,7 +312,9 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 				);
 
 				$rcp_payments = new RCP_Payments();
-				$rcp_payments->insert( $payment_data );
+				$payment_id   = $rcp_payments->insert( $payment_data );
+
+				do_action( 'rcp_gateway_payment_processed', $member, $payment_id, $this );
 
 				$paid = true;
 
@@ -486,6 +488,10 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 						die( 'no subscription ID for member' );
 					}
 
+					if( $event->type == 'customer.subscription.created' ) {
+						do_action( 'rcp_webhook_recurring_payment_profile_created', $member, $this );
+					}
+
 					if( $event->type == 'charge.succeeded' || $event->type == 'invoice.payment_succeeded' ) {
 
 						// setup payment data
@@ -554,7 +560,13 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 
 							// record this payment if it hasn't been recorded yet and it's not a trial invoice
 							if ( empty( $payment_data['is_trial_invoice'] ) ) {
-								$rcp_payments->insert( $payment_data );
+								$payment_id = $rcp_payments->insert( $payment_data );
+
+								if ( $member->is_recurring() ) {
+									do_action( 'rcp_webhook_recurring_payment_processed', $member, $payment_id, $this );
+								}
+
+								do_action( 'rcp_gateway_payment_processed', $member, $payment_id, $this );
 							}
 
 							do_action( 'rcp_stripe_charge_succeeded', $user, $payment_data, $event );
@@ -589,6 +601,8 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 						if( ! $member->just_upgraded() ) {
 
 							$member->cancel();
+
+							do_action( 'rcp_webhook_cancel', $member, $this );
 
 							die( 'member cancelled successfully' );
 
