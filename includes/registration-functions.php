@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 /**
  * Register a new user
  *
- * @uses rcp_set_as_member()
+ * @uses rcp_add_subscription_to_user()
  *
  * @access public
  * @since  1.0
@@ -196,18 +196,19 @@ function rcp_process_registration() {
 	delete_user_meta( $user_data['id'], 'rcp_pending_payment_id' );
 	$amount = ( ! empty( $trial_duration ) && ! rcp_has_used_trial() ) ? 0.00 : rcp_get_registration()->get_total();
 	$payment_data = array(
-		'date'              => date( 'Y-m-d H:i:s', current_time( 'timestamp' ) ),
-		'subscription'      => $subscription->id,
-		'gateway'           => $gateway,
-		'subscription_key' 	=> $subscription_key,
-		'amount'            => $amount,
-		'user_id'           => $user_data['id'],
-		'status'            => 'pending',
-		'subtotal'          => $subscription->price,
-		'credits'           => $member->get_prorate_credit_amount(),
-		'fees'              => rcp_get_registration()->get_total_fees() + $member->get_prorate_credit_amount(),
-		'discount_amount'   => rcp_get_registration()->get_total_discounts(),
-		'discount_code'     => $discount,
+		'date'                  => date( 'Y-m-d H:i:s', current_time( 'timestamp' ) ),
+		'subscription'          => $subscription->name,
+		'subscription_level_id' => $subscription->id,
+		'gateway'               => $gateway,
+		'subscription_key'      => $subscription_key,
+		'amount'                => $amount,
+		'user_id'               => $user_data['id'],
+		'status'                => 'pending',
+		'subtotal'              => $subscription->price,
+		'credits'               => $member->get_prorate_credit_amount(),
+		'fees'                  => rcp_get_registration()->get_total_fees() + $member->get_prorate_credit_amount(),
+		'discount_amount'       => rcp_get_registration()->get_total_discounts(),
+		'discount_code'         => $discount,
 	);
 
 	$rcp_payments = new RCP_Payments();
@@ -225,7 +226,7 @@ function rcp_process_registration() {
 
 		if( ! empty( $discount ) && $full_discount ) {
 
-			rcp_set_as_member( $user_data['id'], $member_data );
+			rcp_add_subscription_to_user( $user_data['id'], $member_data );
 			rcp_login_user_in( $user_data['id'], $user_data['login'] );
 			wp_redirect( rcp_get_return_url( $user_data['id'] ) ); exit;
 
@@ -279,7 +280,7 @@ function rcp_process_registration() {
 	// process a free or trial subscription
 	} else {
 
-		rcp_set_as_member( $user_data['id'], $member_data );
+		rcp_add_subscription_to_user( $user_data['id'], $member_data );
 
 		if( $user_data['need_new'] ) {
 
@@ -955,8 +956,7 @@ add_action( 'rcp_form_processing', 'rcp_set_email_verification_flag', 10, 3 );
 /**
  * Remove subscription data if registration payment fails. Includes:
  *
- *  - Remove trial flags that were just set.
- *  - Decrease discount code usage if a code was used.
+ *  - Update pending payment status to "Failed"
  *
  * @param RCP_Payment_Gateway $gateway
  *
@@ -966,8 +966,10 @@ add_action( 'rcp_form_processing', 'rcp_set_email_verification_flag', 10, 3 );
 function rcp_remove_subscription_data_on_failure( $gateway ) {
 
 	// Delete the pending payment.
-	if( ! empty( $gateway->user_id ) && ! empty( $gateway->payment ) ) {
-		$gateway->payment->delete();
+	if( ! empty( $gateway->user_id ) && is_a( $gateway->payment, 'RCP_Payment' ) ) {
+		$gateway->payment->update( array(
+			'status' => 'failed'
+		) );
 	}
 
 }
@@ -981,7 +983,7 @@ add_action( 'rcp_registration_failed', 'rcp_remove_subscription_data_on_failure'
  *      - Mark as trialing (if applicable).
  *      - Remove the role granted by the previous subscription level and apply new one.
  *
- * @uses rcp_set_as_member()
+ * @uses rcp_add_subscription_to_user()
  *
  * @param string      $old_status Old payment status from before the update.
  * @param int         $payment_id ID of the payment being completed.
@@ -1000,18 +1002,8 @@ function rcp_complete_registration( $old_status, $payment_id, $payment ) {
 		return;
 	}
 
-	$subscription_id = $payment->subscription;
-
-	// Backwards compatibility, in case subscription is stored as its name rather than ID.
-	if ( ! is_numeric( $subscription_id ) ) {
-		$subscription = rcp_get_subscription_details_by_name( $payment->subscription );
-
-		if ( $subscription ) {
-			$subscription_id = $subscription->id;
-		}
-	} else {
-		$subscription = rcp_get_subscription_details( $subscription_id );
-	}
+	$subscription_id = $payment->get_subscription_level_id();
+	$subscription    = rcp_get_subscription_details( $subscription_id );
 
 	// This updates the expiration date, status, discount code usage, role, etc.
 	$args = array(
@@ -1026,7 +1018,7 @@ function rcp_complete_registration( $old_status, $payment_id, $payment ) {
 		$args['trial_duration_unit'] = $subscription->trial_duration_unit;
 	}
 
-	rcp_set_as_member( $payment->user_id, $args );
+	rcp_add_subscription_to_user( $payment->user_id, $args );
 
 	// Delete the pending payment record.
 	delete_user_meta( $member->ID, 'rcp_pending_payment_id' );
@@ -1044,7 +1036,7 @@ add_action( 'rcp_update_payment_status_complete', 'rcp_complete_registration', 1
  * @since 2.9
  * @return bool
  */
-function rcp_set_as_member( $user_id, $args = array() ) {
+function rcp_add_subscription_to_user( $user_id, $args = array() ) {
 
 	$defaults = array(
 		'status'              => '',

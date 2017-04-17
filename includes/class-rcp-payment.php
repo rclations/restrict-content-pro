@@ -23,15 +23,22 @@ class RCP_Payment {
 	public $id = 0;
 
 	/**
-	 * ID of the corresponding subscription level
+	 * Name of the corresponding subscription level
 	 *
-	 * @todo   Convert from name to ID in DB.
-	 *
-	 * @var int
+	 * @var string
 	 * @access public
 	 * @since  2.9
 	 */
 	public $subscription;
+
+	/**
+	 * ID of the corresponding subscription level
+	 *
+	 * @var int
+	 * @access private
+	 * @since  2.9
+	 */
+	private $subscription_level_id;
 
 	/**
 	 * Date the payment was made
@@ -88,13 +95,22 @@ class RCP_Payment {
 	public $user_id;
 
 	/**
-	 * Name of the gateway that was used to make the purchase
+	 * ID of the gateway that was used to make the purchase
+	 *
+	 * @var string
+	 * @access private
+	 * @since  2.9
+	 */
+	private $gateway;
+
+	/**
+	 * Label for the type of payment, i.e. "Credit Card One Time"
 	 *
 	 * @var string
 	 * @access public
 	 * @since  2.9
 	 */
-	public $gateway;
+	public $payment_type;
 
 	/**
 	 * Subscription key
@@ -127,10 +143,10 @@ class RCP_Payment {
 	 * Payment status, i.e. 'complete', 'pending', or 'failed'
 	 *
 	 * @var string
-	 * @access public
+	 * @access private
 	 * @since  2.9
 	 */
-	public $status;
+	private $status;
 
 	/**
 	 * Payments database object
@@ -167,6 +183,30 @@ class RCP_Payment {
 		}
 
 		$this->setup_payment( $payment );
+
+	}
+
+	/**
+	 * Magic __get function
+	 *
+	 * This is used on a few private properties like `$subscription_level_id` if we need to account for
+	 * the value not existing when it should.
+	 *
+	 * @param $key
+	 *
+	 * @access public
+	 * @since  2.9
+	 * @return mixed
+	 */
+	public function __get( $key ) {
+
+		if ( method_exists( $this, 'get_' . $key ) ) {
+			return call_user_func( array( $this, 'get_' . $key ) );
+		} elseif ( property_exists( $this, $key ) ) {
+			return $this->$key;
+		} else {
+			return new WP_Error( 'rcp-payment-invalid-property', sprintf( __( 'Can\'t get property %s', 'rcp' ), $key ) );
+		}
 
 	}
 
@@ -243,6 +283,119 @@ class RCP_Payment {
 	 */
 	public function delete() {
 		$this->payments_db->delete( $this->id );
+	}
+
+	/**
+	 * Get the corresponding subscription level ID
+	 *
+	 * If the ID doesn't exist in the database, attempt to get the ID from the name
+	 * and update the database record.
+	 *
+	 * @access public
+	 * @since  2.9
+	 * @return int
+	 */
+	public function get_subscription_level_id() {
+
+		if ( empty( $this->subscription_level_id ) && ! empty( $this->subscription ) ) {
+
+			// Get the level ID from the name and update it in the database.
+			$subscription = rcp_get_subscription_details_by_name( $this->subscription );
+
+			if ( ! empty( $subscription ) ) {
+				$this->subscription_level_id = absint( $subscription->id );
+				$this->update( array(
+					'subscription_level_id' => $this->subscription_level_id
+				) );
+			}
+
+		}
+
+		return absint( $this->subscription_level_id );
+
+	}
+
+	/**
+	 * Get the ID of the payment gateway used to make the payment
+	 *
+	 * If the gateway doesn't exist in the database, attempt to guess it based
+	 * on the payment type/transaction ID and update the database record.
+	 *
+	 * @access public
+	 * @since  2.9
+	 * @return string
+	 */
+	public function get_gateway() {
+
+		if ( empty( $this->gateway ) && ! empty( $this->payment_type ) ) {
+
+			// Attempt to guess gateway from type and update it in the database.
+			$type    = strtolower( $this->payment_type );
+			$gateway = '';
+
+			switch ( $type ) {
+
+				case 'web_accept' :
+				case 'paypal express one time' :
+				case 'recurring_payment' :
+				case 'subscr_payment' :
+				case 'recurring_payment_profile_created' :
+					$gateway = 'paypal';
+					break;
+
+				case 'credit card' :
+				case 'credit card one time' :
+					if ( false !== strpos( $this->transaction_id, 'ch_' ) ) {
+						$gateway = 'stripe';
+					} elseif ( false !== strpos( $this->transaction_id, 'anet_' ) ) {
+						$gateway = 'authorizenet';
+					} elseif ( is_numeric( $this->transaction_id ) ) {
+						$gateway = 'twocheckout';
+					}
+					break;
+
+				case 'braintree credit card one time' :
+				case 'braintree credit card initial payment' :
+				case 'braintree credit card' :
+					$gateway = 'braintree';
+					break;
+
+			}
+
+			if ( ! empty( $gateway ) ) {
+				$this->gateway = $gateway;
+				$this->update( array(
+					'gateway' => $this->gateway
+				) );
+			}
+
+		}
+
+		return $this->gateway;
+
+	}
+
+	/**
+	 * Get the status of the payment
+	 *
+	 * If the status doesn't exist in the database, set it to 'complete' and
+	 * update the database record.
+	 *
+	 * @access public
+	 * @since  2.9
+	 * @return string
+	 */
+	public function get_status() {
+
+		if ( empty( $this->status ) ) {
+			$this->status = 'complete';
+			$this->update( array(
+				'status' => $this->status
+			) );
+		}
+
+		return $this->status;
+
 	}
 
 }

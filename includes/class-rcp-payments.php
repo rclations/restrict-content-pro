@@ -65,20 +65,21 @@ class RCP_Payments {
 		global $wpdb;
 
 		$defaults = array(
-			'subscription'      => '',
-			'date'              => date( 'Y-m-d H:i:s', current_time( 'timestamp' ) ),
-			'amount'            => 0.00, // Total amount after fees/credits/discounts are added.
-			'user_id'           => 0,
-			'payment_type'      => '',
-			'subscription_key'  => '',
-			'transaction_id'    => '',
-			'status'            => 'complete',
-			'gateway'           => '',
-			'subtotal'          => 0.00, // Base price of the subscription level.
-			'credits'           => 0.00, // Proration credits.
-			'fees'              => 0.00, // Fees.
-			'discount_amount'   => 0.00, // Discount amount from discount code.
-			'discount_code'     => ''
+			'subscription'          => '',
+			'subscription_level_id' => 0,
+			'date'                  => date( 'Y-m-d H:i:s', current_time( 'timestamp' ) ),
+			'amount'                => 0.00, // Total amount after fees/credits/discounts are added.
+			'user_id'               => 0,
+			'payment_type'          => '',
+			'subscription_key'      => '',
+			'transaction_id'        => '',
+			'status'                => 'complete',
+			'gateway'               => '',
+			'subtotal'              => 0.00, // Base price of the subscription level.
+			'credits'               => 0.00, // Proration credits.
+			'fees'                  => 0.00, // Fees.
+			'discount_amount'       => 0.00, // Discount amount from discount code.
+			'discount_code'         => ''
 		);
 
 		$args = wp_parse_args( $payment_data, $defaults );
@@ -87,12 +88,12 @@ class RCP_Payments {
 			return false;
 		}
 
-		// Backwards compatibility: use subscription ID instead of name.
-		if ( ! is_numeric( $args['subscription'] ) ) {
+		// Backwards compatibility: make sure we store the subscription ID as well.
+		if ( empty( $args['subscription_level_id'] ) && ! empty( $args['subscription'] ) ) {
 			$subscription = rcp_get_subscription_details_by_name( $args['subscription'] );
 
 			if ( $subscription ) {
-				$args['subscription'] = $subscription->id;
+				$args['subscription_level_id'] = $subscription->id;
 			}
 		}
 
@@ -108,12 +109,13 @@ class RCP_Payments {
 			}
 		}
 
-		$add = $wpdb->insert( $this->db_name, $args, array( '%s', '%s', '%s', '%d', '%s', '%s', '%s' ) );
+		$add = $wpdb->insert( $this->db_name, $args, array( '%s', '%d', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' ) );
 
 		// if insert was succesful, return the payment ID
 		if( $add ) {
 
 			$payment_id = $wpdb->insert_id;
+			$payment    = new RCP_Payment( $payment_id );
 
 			// clear the payment caches
 			delete_transient( 'rcp_earnings' );
@@ -121,6 +123,22 @@ class RCP_Payments {
 
 			// Remove trialing status, if it exists
 			delete_user_meta( $args['user_id'], 'rcp_is_trialing' );
+
+			/**
+			 * Triggers when the payment's status is changed. This is here to spoof a status
+			 * change when a payment is first inserted.
+			 *
+			 * @see RCP_Payment::update() - Action is also run here when status is changed.
+			 *
+			 * @param string      $new_status New status being set.
+			 * @param string      $old_status Previous status before the update.
+			 * @param int         $payment_id ID of the payment.
+			 * @param RCP_Payment $payment    Payment object.
+			 *
+			 * @since 2.9
+			 */
+			do_action( 'rcp_update_payment_status', $args['status'], 'pending', $payment_id, $payment );
+			do_action( 'rcp_update_payment_status_' . $args['status'], 'pending', $payment_id, $payment );
 
 			if ( 'complete' == $args['status'] ) {
 				/**

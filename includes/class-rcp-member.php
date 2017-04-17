@@ -1433,8 +1433,8 @@ class RCP_Member extends WP_User {
 			return 0;
 		}
 
-		if ( is_numeric( $payment->subscription ) ) {
-			$subscription_id = absint( $payment->subscription );
+		if ( ! empty( $payment->subscription_level_id ) ) {
+			$subscription_id = absint( $payment->subscription_level_id );
 			$subscription    = rcp_get_subscription_details( $subscription_id );
 		} else {
 			$subscription    = rcp_get_subscription_details_by_name( $payment->subscription );
