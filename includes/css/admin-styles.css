@@ -136,6 +136,24 @@
 	text-align: center;
 }
 
+/* Input Fields
+-------------------------------------------------------------- */
+#rcp-name, #rcp-description, #rcp-code, #rcp-user, #rcp-userlogin, #rcp-email, #rcp-key, #rcp-payment-profile-id {
+	width: 300px;
+}
+
+#rcp-price, #rcp-fee, #rcp-amount {
+	width: 100px;
+}
+
+#rcp-duration, #trial_duration, #rcp-max-uses {
+	width: 40px;
+}
+
+#rcp-expiration {
+	width: 120px;
+}
+
 /* Restrict This Content Metabox
 -------------------------------------------------------------- */
 
@@ -205,6 +223,10 @@
 
 .rcp-member-id {
 	color: #555;
+}
+
+#rcp-revoke-access-wrap {
+	display: none;
 }
 
 /* Subscription Levels Page Columns
