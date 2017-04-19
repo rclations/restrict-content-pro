@@ -9,7 +9,7 @@
  * @subpackage  Classes/Discounts
  * @copyright   Copyright (c) 2017, Pippin Williamson
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
- * @since 1.5
+ * @since       1.5
  */
 
 
@@ -116,6 +116,8 @@ class RCP_Discounts {
 	/**
 	 * Get the status of a discount
 	 *
+	 * @deprecated 2.9 Use RCP_Discount::$status instead.
+	 *
 	 * @param  int $discount_id ID of the discount.
 	 *
 	 * @access  public
@@ -124,17 +126,17 @@ class RCP_Discounts {
 	 */
 	public function get_status( $discount_id = 0 ) {
 
-		$discount = $this->get_discount( $discount_id );
+		$discount = new RCP_Discount( $discount_id );
 
-		if( $discount )
-			return $discount->status;
-		return false;
+		return $discount->status;
 
 	}
 
 
 	/**
 	 * Get the amount of a discount
+	 *
+	 * @deprecated 2.9 Use RCP_Discount::$amount instead.
 	 *
 	 * @param  int $discount_id ID of the discount.
 	 *
@@ -144,17 +146,17 @@ class RCP_Discounts {
 	 */
 	public function get_amount( $discount_id = 0 ) {
 
-		$discount = $this->get_discount( $discount_id );
+		$discount = new RCP_Discount( $discount_id );
 
-		if( $discount )
-			return $discount->amount;
-		return 0;
+		return $discount->amount;
 
 	}
 
 
 	/**
 	 * Get the number of times a discount has been used
+	 *
+	 * @deprecated 2.9 Use RCP_Discount::$use_count instead.
 	 *
 	 * @param  int $discount_id ID of the discount.
 	 *
@@ -164,17 +166,17 @@ class RCP_Discounts {
 	 */
 	public function get_uses( $discount_id = 0 ) {
 
-		$discount = $this->get_discount( $discount_id );
+		$discount = new RCP_Discount( $discount_id );
 
-		if( $discount )
-			return $discount->use_count;
-		return 0;
+		return absint( $discount->use_count );
 
 	}
 
 
 	/**
 	 * Get the maximum number of times a discount can be used
+	 *
+	 * @deprecated 2.9 Use RCP_Discount::$max_uses instead.
 	 *
 	 * @param  int $discount_id ID of the discount.
 	 *
@@ -184,17 +186,17 @@ class RCP_Discounts {
 	 */
 	public function get_max_uses( $discount_id = 0 ) {
 
-		$discount = $this->get_discount( $discount_id );
+		$discount = new RCP_Discount( $discount_id );
 
-		if( $discount )
-			return $discount->max_uses;
-		return 0;
+		return absint( $discount->max_uses );
 
 	}
 
 
 	/**
 	 * Get the associated subscription level for a discount
+	 *
+	 * @deprecated 2.9 Use RCP_Discount::$subscription_id instead.
 	 *
 	 * @param  int $discount_id ID of the discount.
 	 *
@@ -204,17 +206,17 @@ class RCP_Discounts {
 	 */
 	public function get_subscription_id( $discount_id = 0 ) {
 
-		$discount = $this->get_discount( $discount_id );
+		$discount = new RCP_Discount( $discount_id );
 
-		if( $discount )
-			return $discount->subscription_id;
-		return 0;
+		return absint( $discount->subscription_id );
 
 	}
 
 
 	/**
-	 * Checks wether a discount code has a subscription associated
+	 * Checks whether a discount code has a subscription associated
+	 *
+	 * @deprecated 2.9 Use RCP_Discount::has_subscription_id() instead.
 	 *
 	 * @param  int $discount_id ID of the discount.
 	 *
@@ -224,13 +226,17 @@ class RCP_Discounts {
 	 */
 	public function has_subscription_id( $discount_id = 0 ) {
 
-		return $this->get_subscription_id( $discount_id ) > 0;
+		$discount = new RCP_Discount( $discount_id );
+
+		return $discount->has_subscription_id();
 
 	}
 
 
 	/**
 	 * Increase the use count of a discount by 1
+	 *
+	 * @deprecated 2.9 Use RCP_Discount::increase_uses() instead.
 	 *
 	 * @param  int $discount_id ID of the discount.
 	 *
@@ -240,13 +246,15 @@ class RCP_Discounts {
 	*/
 	public function increase_uses( $discount_id = 0 ) {
 
-		$uses = absint( $this->get_uses( $discount_id ) );
-		$uses += 1;
-		$this->update( $discount_id, array( 'use_count' => $uses ) );
+		$discount = new RCP_Discount( $discount_id );
+		$discount->increase_uses();
+
 	}
 
 	/**
 	 * Decrease the use count of a discount by 1
+	 *
+	 * @deprecated 2.9 Use RCP_Discount::decrease_uses() instead.
 	 *
 	 * @param  int $discount_id ID of the discount.
 	 *
@@ -256,20 +264,16 @@ class RCP_Discounts {
 	 */
 	public function decrease_uses( $discount_id = 0 ) {
 
-		$uses = absint( $this->get_uses( $discount_id ) );
-		$uses -= 1;
-		
-		if( $uses < 0 ) {
-			$uses = 0;
-		}
-
-		$this->update( $discount_id, array( 'use_count' => $uses ) );
+		$discount = new RCP_Discount( $discount_id );
+		$discount->decrease_uses();
 
 	}
 
 
 	/**
 	 * Get the expiration date of a discount
+	 *
+	 * @deprecated 2.9 Use RCP_Discount::$expiration instead.
 	 *
 	 * @param  int $discount_id ID of the discount.
 	 *
@@ -279,10 +283,12 @@ class RCP_Discounts {
 	 */
 	public function get_expiration( $discount_id = 0 ) {
 
-		$discount = $this->get_discount( $discount_id );
+		$discount = new RCP_Discount( $discount_id );
 
-		if( $discount )
+		if( ! empty( $discount->expiration ) ) {
 			return $discount->expiration;
+		}
+
 		return false;
 
 	}
@@ -290,6 +296,8 @@ class RCP_Discounts {
 
 	/**
 	 * Get the discount type
+	 *
+	 * @deprecated 2.9 Use RCP_Discount::$unit instead.
 	 *
 	 * @param  int $discount_id ID of the discount.
 	 *
@@ -301,8 +309,10 @@ class RCP_Discounts {
 
 		$discount = $this->get_discount( $discount_id );
 
-		if( $discount )
+		if( $discount ) {
 			return $discount->unit;
+		}
+
 		return false;
 
 	}
@@ -485,17 +495,9 @@ class RCP_Discounts {
 	 */
 	public function is_maxed_out( $discount_id = 0 ) {
 
-		$uses = $this->get_uses( $discount_id );
-		$max  = $this->get_max_uses( $discount_id );
-		$ret  = false;
+		$discount = new RCP_Discount( $discount_id );
 
-		if( ! empty( $max ) && $max > 0 ) {
-			if( $uses >= $max ) {
-				$ret = true;
-			}
-		}
-
-		return (bool) apply_filters( 'rcp_is_discount_maxed_out', $ret, $discount_id, $uses, $max );
+		return $discount->is_maxed_out();
 
 	}
 
@@ -511,18 +513,9 @@ class RCP_Discounts {
 	 */
 	public function is_expired( $discount_id = 0 ) {
 
-		$ret        = false;
-		$expiration = $this->get_expiration( $discount_id );
+		$discount = new RCP_Discount( $discount_id );
 
-		// if no expiration is set, return true
-		if( ! empty( $expiration ) ) {
-
-			if ( strtotime( 'NOW', current_time( 'timestamp' ) ) > strtotime( $expiration, current_time( 'timestamp' ) ) ) {
-				$ret = true;
-			}
-		}
-
-		return (bool) apply_filters( 'rcp_is_discount_expired', $ret, $discount_id, $expiration );
+		return $discount->is_expired();
 
 	}
 
@@ -539,19 +532,8 @@ class RCP_Discounts {
 	 */
 	public function add_to_user( $user_id = 0, $discount_code = '' ) {
 
-		$user_discounts = get_user_meta( $user_id, 'rcp_user_discounts', true );
-
-		if( ! is_array( $user_discounts ) ) {
-			$user_discounts = array();
-		}
-
-		$user_discounts[] = $discount_code;
-
-		do_action( 'rcp_pre_store_discount_for_user', $discount_code, $user_id );
-
-		update_user_meta( $user_id, 'rcp_user_discounts', $user_discounts );
-
-		do_action( 'rcp_store_discount_for_user', $discount_code, $user_id );
+		$discount = new RCP_Discount( $discount_code );
+		$discount->add_to_user( $user_id );
 
 	}
 
@@ -567,32 +549,9 @@ class RCP_Discounts {
 	 */
 	public function remove_from_user( $user_id, $discount_code = '' ) {
 
-		$user_discounts = get_user_meta( $user_id, 'rcp_user_discounts', true );
+		$discount = new RCP_Discount( $discount_code );
 
-		if( ! is_array( $user_discounts ) ) {
-			$user_discounts = array();
-		}
-
-		// Reverse the array to remove the last instance of the discount.
-		$key = array_search( $discount_code, array_reverse( $user_discounts, true ) );
-
-		if( false !== $key ) {
-			unset( $user_discounts[ $key ] );
-
-			do_action( 'rcp_pre_remove_discount_from_user', $discount_code, $user_id );
-
-			if( empty( $user_discounts ) ) {
-				delete_user_meta( $user_id, 'rcp_user_discounts' );
-			} else {
-				update_user_meta( $user_id, 'rcp_user_discounts', $user_discounts );
-			}
-
-			do_action( 'rcp_remove_discount_from_user', $discount_code, $user_id );
-
-			return true;
-		}
-
-		return false;
+		return $discount->remove_from_user( $user_id );
 
 	}
 
@@ -609,12 +568,9 @@ class RCP_Discounts {
 	 */
 	public function user_has_used( $user_id = 0, $discount_code = '' ) {
 
-		$user_discounts = get_user_meta( $user_id, 'rcp_user_discounts', true );
+		$discount = new RCP_Discount( $discount_code );
 
-		if( is_array( $user_discounts ) && in_array( $discount_code, $user_discounts ) )
-			return true;
-
-		return false;
+		return $discount->user_has_used( $user_id );
 
 	}
 
