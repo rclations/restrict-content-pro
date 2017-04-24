@@ -34,19 +34,19 @@ function rcp_member_levels_page() {
 					<a href="<?php echo esc_url( remove_query_arg( 'status', $page ) ); ?>" title="<?php esc_attr_e( 'View all subscription levels', 'rcp' ); ?>"<?php echo 'all' == $status ? ' class="current"' : ''; ?>>
 						<?php _e( 'All', 'rcp' ); ?>
 						<span class="count">(<?php echo $all_count; ?>)</span>
-					</a>|
+					</a>
 				</li>
 				<?php if ( $active_count > 0 ) : ?>
 					<li>
-						<a href="<?php echo esc_url( add_query_arg( 'status', 'active', $page ) ); ?>" title="<?php esc_attr_e( 'View active subscription levels', 'rcp' ); ?>"<?php echo 'active' == $status ? ' class="current"' : ''; ?>>
+						|<a href="<?php echo esc_url( add_query_arg( 'status', 'active', $page ) ); ?>" title="<?php esc_attr_e( 'View active subscription levels', 'rcp' ); ?>"<?php echo 'active' == $status ? ' class="current"' : ''; ?>>
 							<?php _e( 'Active', 'rcp' ); ?>
 							<span class="count">(<?php echo $active_count; ?>)</span>
-						</a>|
+						</a>
 					</li>
 				<?php endif; ?>
 				<?php if ( $inactive_count > 0 ) : ?>
 					<li>
-						<a href="<?php echo esc_url( add_query_arg( 'status', 'inactive', $page ) ); ?>" title="<?php esc_attr_e( 'View inactive subscription levels', 'rcp' ); ?>"<?php echo 'inactive' == $status ? ' class="current"' : ''; ?>>
+						|<a href="<?php echo esc_url( add_query_arg( 'status', 'inactive', $page ) ); ?>" title="<?php esc_attr_e( 'View inactive subscription levels', 'rcp' ); ?>"<?php echo 'inactive' == $status ? ' class="current"' : ''; ?>>
 							<?php _e( 'Inactive', 'rcp' ); ?>
 							<span class="count">(<?php echo $inactive_count; ?>)</span>
 						</a>

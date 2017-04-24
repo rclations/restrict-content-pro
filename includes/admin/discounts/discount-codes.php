@@ -37,19 +37,19 @@ function rcp_discounts_page() {
 					<a href="<?php echo esc_url( remove_query_arg( 'status', $page ) ); ?>" title="<?php esc_attr_e( 'View all discount codes', 'rcp' ); ?>"<?php echo 'all' == $status ? ' class="current"' : ''; ?>>
 						<?php _e( 'All', 'rcp' ); ?>
 						<span class="count">(<?php echo $all_count; ?>)</span>
-					</a>|
+					</a>
 				</li>
 				<?php if ( $active_count > 0 ) : ?>
 					<li>
-						<a href="<?php echo esc_url( add_query_arg( 'status', 'active', $page ) ); ?>" title="<?php esc_attr_e( 'View active discount codes', 'rcp' ); ?>"<?php echo 'active' == $status ? ' class="current"' : ''; ?>>
+						|<a href="<?php echo esc_url( add_query_arg( 'status', 'active', $page ) ); ?>" title="<?php esc_attr_e( 'View active discount codes', 'rcp' ); ?>"<?php echo 'active' == $status ? ' class="current"' : ''; ?>>
 							<?php _e( 'Active', 'rcp' ); ?>
 							<span class="count">(<?php echo $active_count; ?>)</span>
-						</a>|
+						</a>
 					</li>
 				<?php endif; ?>
 				<?php if ( $inactive_count > 0 ) : ?>
 					<li>
-						<a href="<?php echo esc_url( add_query_arg( 'status', 'disabled', $page ) ); ?>" title="<?php esc_attr_e( 'View inactive discount codes', 'rcp' ); ?>"<?php echo 'disabled' == $status ? ' class="current"' : ''; ?>>
+						|<a href="<?php echo esc_url( add_query_arg( 'status', 'disabled', $page ) ); ?>" title="<?php esc_attr_e( 'View inactive discount codes', 'rcp' ); ?>"<?php echo 'disabled' == $status ? ' class="current"' : ''; ?>>
 							<?php _e( 'Inactive', 'rcp' ); ?>
 							<span class="count">(<?php echo $inactive_count; ?>)</span>
 						</a>
