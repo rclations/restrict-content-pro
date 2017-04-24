@@ -279,9 +279,7 @@ class RCP_Payments {
 				$status_placeholder = array_fill( 0, $status_count, '%s' );
 				$statuses           = implode( ', ', $status_placeholder );
 
-				$where .= " AND `status` IN( {$statuses} ) ";
-
-				$where .= $wpdb->prepare( "AND `status` IN ( %s )", $statuses );
+				$where .= $wpdb->prepare( "AND `status` IN ( $statuses )", $args['status'] );
 			} else {
 				$where .= $wpdb->prepare( "AND `status` = %s", $args['status'] );
 			}
@@ -415,9 +413,7 @@ class RCP_Payments {
 				$status_placeholder = array_fill( 0, $status_count, '%s' );
 				$statuses           = implode( ', ', $status_placeholder );
 
-				$where .= " AND `status` IN( {$statuses} ) ";
-
-				$where .= $wpdb->prepare( "AND `status` IN ( %s )", $statuses );
+				$where .= $wpdb->prepare( "AND `status` IN ( $statuses )", $args['status'] );
 			} else {
 				$where .= $wpdb->prepare( "AND `status` = %s", $args['status'] );
 			}
