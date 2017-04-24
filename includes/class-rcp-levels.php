@@ -131,9 +131,9 @@ class RCP_Levels {
 		$args = wp_parse_args( $args, $defaults );
 
 		if( $args['status'] == 'active' ) {
-			$where = "WHERE `status` !='inactive'";
+			$where = "WHERE `status` = 'active'";
 		} elseif( $args['status'] == 'inactive' ) {
-			$where = "WHERE `status` ='inactive'";
+			$where = "WHERE `status` = 'inactive'";
 		} else {
 			$where = "";
 		}
@@ -186,9 +186,9 @@ class RCP_Levels {
 
 		// Filter by status.
 		if ( $args['status'] == 'active' ) {
-			$where = "WHERE `status` !='inactive'";
+			$where = "WHERE `status` = 'active'";
 		} elseif ( $args['status'] == 'inactive' ) {
-			$where = "WHERE `status` ='inactive'";
+			$where = "WHERE `status` = 'inactive'";
 		}
 
 		$key   = md5( 'rcp_levels_count_' . serialize( $args ) );

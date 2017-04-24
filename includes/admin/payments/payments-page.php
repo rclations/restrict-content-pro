@@ -36,7 +36,7 @@ function rcp_payments_page() {
 		<?php do_action('rcp_payments_page_top');
 
 		$rcp_payments  = new RCP_Payments();
-		$page          = isset( $_GET['p'] ) ? $_GET['p'] : 1;
+		$page          = isset( $_GET['p'] ) ? absint( $_GET['p'] ) : 1;
 		$search        = ! empty( $_GET['s'] )       ? urldecode( $_GET['s'] )      : '';
 		$status        = isset( $_GET['status'] ) ? sanitize_text_field( $_GET['status'] ) : '';
 

@@ -59,6 +59,12 @@ class RCP_Discounts {
 	public function get_discounts( $args = array() ) {
 		global $wpdb;
 
+		$defaults = array(
+			'status' => 'all'
+		);
+
+		$args = wp_parse_args( $args, $defaults );
+
 		$where = '';
 
 		// Filter by status.
