@@ -37,7 +37,7 @@ function rcp_payments_page() {
 
 		$rcp_payments  = new RCP_Payments();
 		$page          = isset( $_GET['p'] ) ? absint( $_GET['p'] ) : 1;
-		$search        = ! empty( $_GET['s'] )       ? urldecode( $_GET['s'] )      : '';
+		$search        = ! empty( $_GET['s'] ) ? urldecode( $_GET['s'] ) : '';
 		$status        = isset( $_GET['status'] ) ? sanitize_text_field( $_GET['status'] ) : '';
 
 		$user          = get_current_user_id();
@@ -65,6 +65,9 @@ function rcp_payments_page() {
 			<label class="screen-reader-text" for="rcp-member-search-input"><?php _e( 'Search Payments', 'rcp' ); ?></label>
 			<input type="search" id="rcp-member-search-input" name="s" value="<?php echo esc_attr( $search ); ?>"/>
 			<input type="hidden" name="page" value="rcp-payments"/>
+			<?php if ( ! empty( $status ) ) : ?>
+				<input type="hidden" name="status" value="<?php echo esc_attr( $status ); ?>"/>
+			<?php endif; ?>
 			<input type="submit" name="" id="rcp-member-search-submit" class="button" value="<?php _e( 'Search Payments', 'rcp' ); ?>"/>
 		</form>
 
