@@ -292,7 +292,7 @@ final class RCP_Reminders {
 					$rcp_email->member_id = $member->ID;
 					$rcp_email->send( $member->user_email, $notice['subject'], $notice['message'] );
 
-					rcp_add_member_note( $member->ID, sprintf( __( '%s notice was emailed to the member.', 'rcp' ), ucwords( $type ) ) );
+					rcp_add_member_note( $member->ID, sprintf( __( '%s notice was emailed to the member - %s.', 'rcp' ), ucwords( $type ), $this->get_notice_period_label( $notice_id ) ) );
 
 					// Prevents reminder notices from being sent more than once.
 					add_user_meta( $member->ID, sanitize_key( '_rcp_reminder_sent_' . $member->get_subscription_id() . '_' . $notice_id ), time() );
