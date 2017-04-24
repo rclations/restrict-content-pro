@@ -75,24 +75,30 @@ function rcp_payments_page() {
 					<span class="count">(<?php echo $all_count; ?>)</span>
 				</a>|
 			</li>
-			<li>
-				<a href="<?php echo esc_url( add_query_arg( 'status', 'complete', $current_page ) ); ?>" title="<?php esc_attr_e( 'View complete payments', 'rcp' ); ?>"<?php echo 'complete' == $status ? ' class="current"' : ''; ?>>
-					<?php _e( 'Complete', 'rcp' ); ?>
-					<span class="count">(<?php echo $complete_count; ?>)</span>
-				</a>|
-			</li>
-			<li>
-				<a href="<?php echo esc_url( add_query_arg( 'status', 'pending', $current_page ) ); ?>" title="<?php esc_attr_e( 'View pending payments', 'rcp' ); ?>"<?php echo 'pending' == $status ? ' class="current"' : ''; ?>>
-					<?php _e( 'Pending', 'rcp' ); ?>
-					<span class="count">(<?php echo $pending_count; ?>)</span>
-				</a>|
-			</li>
-			<li>
-				<a href="<?php echo esc_url( add_query_arg( 'status', 'refunded', $current_page ) ); ?>" title="<?php esc_attr_e( 'View refunded payments', 'rcp' ); ?>"<?php echo 'refunded' == $status ? ' class="current"' : ''; ?>>
-					<?php _e( 'Refunded', 'rcp' ); ?>
-					<span class="count">(<?php echo $refunded_count; ?>)</span>
-				</a>
-			</li>
+			<?php if ( $complete_count > 0 ) : ?>
+				<li>
+					<a href="<?php echo esc_url( add_query_arg( 'status', 'complete', $current_page ) ); ?>" title="<?php esc_attr_e( 'View complete payments', 'rcp' ); ?>"<?php echo 'complete' == $status ? ' class="current"' : ''; ?>>
+						<?php _e( 'Complete', 'rcp' ); ?>
+						<span class="count">(<?php echo $complete_count; ?>)</span>
+					</a>|
+				</li>
+			<?php endif; ?>
+			<?php if ( $pending_count > 0 ) : ?>
+				<li>
+					<a href="<?php echo esc_url( add_query_arg( 'status', 'pending', $current_page ) ); ?>" title="<?php esc_attr_e( 'View pending payments', 'rcp' ); ?>"<?php echo 'pending' == $status ? ' class="current"' : ''; ?>>
+						<?php _e( 'Pending', 'rcp' ); ?>
+						<span class="count">(<?php echo $pending_count; ?>)</span>
+					</a>|
+				</li>
+			<?php endif; ?>
+			<?php if ( $refunded_count > 0 ) : ?>
+				<li>
+					<a href="<?php echo esc_url( add_query_arg( 'status', 'refunded', $current_page ) ); ?>" title="<?php esc_attr_e( 'View refunded payments', 'rcp' ); ?>"<?php echo 'refunded' == $status ? ' class="current"' : ''; ?>>
+						<?php _e( 'Refunded', 'rcp' ); ?>
+						<span class="count">(<?php echo $refunded_count; ?>)</span>
+					</a>
+				</li>
+			<?php endif; ?>
 		</ul>
 
 		<p class="total"><strong><?php _e( 'Total Earnings', 'rcp' ); ?>: <?php echo rcp_currency_filter( number_format_i18n( $rcp_payments->get_earnings(), 2 ) ); ?></strong></p>

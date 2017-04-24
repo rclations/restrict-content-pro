@@ -39,18 +39,22 @@ function rcp_discounts_page() {
 						<span class="count">(<?php echo $all_count; ?>)</span>
 					</a>|
 				</li>
-				<li>
-					<a href="<?php echo esc_url( add_query_arg( 'status', 'active', $page ) ); ?>" title="<?php esc_attr_e( 'View active discount codes', 'rcp' ); ?>"<?php echo 'active' == $status ? ' class="current"' : ''; ?>>
-						<?php _e( 'Active', 'rcp' ); ?>
-						<span class="count">(<?php echo $active_count; ?>)</span>
-					</a>|
-				</li>
-				<li>
-					<a href="<?php echo esc_url( add_query_arg( 'status', 'disabled', $page ) ); ?>" title="<?php esc_attr_e( 'View inactive discount codes', 'rcp' ); ?>"<?php echo 'disabled' == $status ? ' class="current"' : ''; ?>>
-						<?php _e( 'Inctive', 'rcp' ); ?>
-						<span class="count">(<?php echo $inactive_count; ?>)</span>
-					</a>
-				</li>
+				<?php if ( $active_count > 0 ) : ?>
+					<li>
+						<a href="<?php echo esc_url( add_query_arg( 'status', 'active', $page ) ); ?>" title="<?php esc_attr_e( 'View active discount codes', 'rcp' ); ?>"<?php echo 'active' == $status ? ' class="current"' : ''; ?>>
+							<?php _e( 'Active', 'rcp' ); ?>
+							<span class="count">(<?php echo $active_count; ?>)</span>
+						</a>|
+					</li>
+				<?php endif; ?>
+				<?php if ( $inactive_count > 0 ) : ?>
+					<li>
+						<a href="<?php echo esc_url( add_query_arg( 'status', 'disabled', $page ) ); ?>" title="<?php esc_attr_e( 'View inactive discount codes', 'rcp' ); ?>"<?php echo 'disabled' == $status ? ' class="current"' : ''; ?>>
+							<?php _e( 'Inactive', 'rcp' ); ?>
+							<span class="count">(<?php echo $inactive_count; ?>)</span>
+						</a>
+					</li>
+				<?php endif; ?>
 			</ul>
 
 			<table class="wp-list-table widefat posts">
