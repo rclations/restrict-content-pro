@@ -83,6 +83,14 @@ $role_set_display  = '' != $user_role ? '' : ' style="display:none;"';
 		</select>
 	</p>
 </div>
+<div id="rcp-metabox-override-term-restrictions" class="rcp-metabox-field">
+	<p>
+		<label for="rcp_restrict">
+			<input type="checkbox" id="rcp_override_term_restrictions" name="rcp_override_term_restrictions" value="1" <?php checked( true, get_post_meta( $post->ID, 'rcp_override_term_restrictions', true ) ); ?>/>
+			<?php _e( 'Check this box to ignore category restrictions on this post.', 'rcp-override-term-restrictions' ); ?>
+		</label>
+	</p>
+</div>
 <?php do_action( 'rcp_metabox_additional_options_before' ); ?>
 <?php if( apply_filters( 'rcp_metabox_show_additional_options', true ) ) : ?>
 	<div id="rcp-metabox-field-options" class="rcp-metabox-field">

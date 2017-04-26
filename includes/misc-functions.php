@@ -688,12 +688,17 @@ function rcp_is_restricted_content( $post_id ) {
 
 	// Check post restrictions.
 	$restricted = rcp_has_post_restrictions( $post_id );
+	$override_term_restrictions = rcp_override_term_restrictions( $post_id );
 
 	// Check if the post is restricted via a term.
 	if ( ! $restricted ) {
-		$term_restricted_post_ids = rcp_get_post_ids_assigned_to_restricted_terms();
-		if ( in_array( $post_id, $term_restricted_post_ids ) ) {
-			$restricted = true;
+		if ( $override_term_restrictions ) {
+			$restricted = false;
+		} else {
+			$term_restricted_post_ids = rcp_get_post_ids_assigned_to_restricted_terms();
+			if ( in_array( $post_id, $term_restricted_post_ids ) ) {
+				$restricted = true;
+			}
 		}
 	}
 
@@ -743,6 +748,28 @@ function rcp_has_post_restrictions( $post_id ) {
 	}
 
 	return (bool) apply_filters( 'rcp_has_post_restrictions', $restricted, $post_id );
+
+}
+
+/**
+ * Checks to see if a given post has selected to override term restrictions.
+ *
+ * @param int $post_id The post ID to check for restrictions override.
+ *
+ * @since 2.8.6
+ * @return bool True if the post has selected to override term restrictions.
+ */
+function rcp_override_term_restrictions( $post_id ) {
+
+	if ( empty( $post_id ) || ! is_numeric( $post_id ) ) {
+		return false;
+	}
+
+	$selected = false;
+	$post_id = absint( $post_id );
+	$selected = get_post_meta( $post_id, 'rcp_override_term_restrictions', true );
+
+	return (bool) apply_filters( 'rcp_override_term_restrictions', $selected, $post_id );
 
 }
 

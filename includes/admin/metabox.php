@@ -206,10 +206,12 @@ function rcp_save_meta_data( $post_id ) {
 
 	global $rcp_options;
 
-	$content_excerpts  = isset( $rcp_options['content_excerpts'] ) ? $rcp_options['content_excerpts'] : 'individual';
-	$show_excerpt      = isset( $_POST['rcp_show_excerpt'] );
-	$hide_in_feed      = isset( $_POST['rcp_hide_from_feed'] );
-	$user_role         = sanitize_text_field( $_POST[ 'rcp_user_level' ] );
+	$content_excerpts           = isset( $rcp_options['content_excerpts'] ) ? $rcp_options['content_excerpts'] : 'individual';
+	$show_excerpt               = isset( $_POST['rcp_show_excerpt'] );
+	$hide_in_feed               = isset( $_POST['rcp_hide_from_feed'] );
+	$user_role                  = sanitize_text_field( $_POST[ 'rcp_user_level' ] );
+	$show_excerpt               = isset( $_POST['rcp_show_excerpt'] );
+	$override_term_restrictions = isset( $_POST['rcp_override_term_restrictions'] );
 
 	if ( 'individual' === $content_excerpts && $show_excerpt ) {
 		update_post_meta( $post_id, 'rcp_show_excerpt', $show_excerpt );
@@ -231,6 +233,12 @@ function rcp_save_meta_data( $post_id ) {
 		update_post_meta( $post_id, '_is_paid', $is_paid );
 	} else {
 		delete_post_meta( $post_id, '_is_paid' );
+	}
+
+	if ( $override_term_restrictions ) {
+		update_post_meta( $post_id, 'rcp_override_term_restrictions', $override_term_restrictions );
+	} else {
+		delete_post_meta( $post_id, 'rcp_override_term_restrictions' );
 	}
 
 	do_action( 'rcp_save_post_meta', $post_id );
